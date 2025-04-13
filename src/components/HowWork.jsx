@@ -1,24 +1,25 @@
 import React from 'react';
 import { FaUserPlus, FaGlobe, FaRoute } from 'react-icons/fa';
 import FeatureApp from '../assets/images/Features_app.png';
+import bgImage from '../assets/images/986.jpg';
 import '../index.css'
 
 const HowWork = () => {
   const steps = [
     {
-      icon: <FaUserPlus className="text-2xl text-yellow-500" />,
+      icon: <FaUserPlus className="text-2xl"  style={{ color: 'oklch(0.67 0.22 37.1)' }} />,
       title: "Create an account",
       description: "Sign up for an account with your name, email and phone number.",
       image: FeatureApp
     },
     {
-      icon: <FaGlobe className="text-2xl text-yellow-500" />,
+      icon: <FaGlobe className="text-2xl"  style={{ color: 'oklch(0.67 0.22 37.1)' }} />,
       title: "Choose your Country",
       description: "Using your debit card, bank account, USSD, QR Code, setup your first plan.",
       image: FeatureApp
     },
     {
-      icon: <FaRoute className="text-2xl text-yellow-500" />,
+      icon: <FaRoute className="text-2xl"  style={{ color: 'oklch(0.67 0.22 37.1)' }} />,
       title: "Start food adventure",
       description: "Sit back, relax & let your money work for you all day, everyday.",
       image: FeatureApp
@@ -26,7 +27,8 @@ const HowWork = () => {
   ];
 
   return (
-    <section id='howwork' className="py-20 bg-gray-100">
+    <section id='howwork' className="py-20 relative bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
+      <div className="absolute bg-white/82"></div>
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Column - Text Content */}
@@ -40,9 +42,9 @@ const HowWork = () => {
                 <div key={index} className="space-y-2">
                   <div className="flex items-center gap-3">
                     {step.icon}
-                    <h3 className="text-xl font-semibold text-yellow-500">{step.title}</h3>
+                    <h3 className="text-xl font-semibold"  style={{ color: 'oklch(0.67 0.22 37.1)' }}>{step.title}</h3>
                   </div>
-                  <p className="text-gray-600 pl-9">
+                  <p className="text-black pl-9">
                     {step.description}
                   </p>
                 </div>

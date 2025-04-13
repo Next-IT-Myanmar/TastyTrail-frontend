@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import headerApp from "../assets/images/header_app.png";
-import appStore from "../assets/images/app_store.png";
-import playStore from "../assets/images/play_store.png";
+import appStore from "../assets/images/app_store_white.png";
+import playStore from "../assets/images/play_store_white.png";
 import { FaUsers, FaDownload, FaStar, FaSmile } from 'react-icons/fa';
 import '../index.css'
+import section_one_bg from '../assets/images/flat-lay-composition-healthy-vegetarian-food.jpg';
 
 const Home = () => {
   const [counters, setCounters] = useState({
@@ -44,15 +45,16 @@ const Home = () => {
   }, []);
 
   return (
-    <section id="home" className="py-20 md:py-20">
-      <div className="container mx-auto px-4">
+    <section id="home" className="min-h-screen py-20 md:py-20 relative bg-cover bg-center bg-fixed flex items-center" style={{ backgroundImage: `url(${section_one_bg})` }}>
+      <div className="absolute inset-0"></div>
+      <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-2 gap-8 items-center relative">
           {/* Left Column */}
-          <div className="space-y-6 md:space-y-8 text-center md:text-left relative">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
+          <div className="space-y-6 md:space-y-8 text-center md:text-left relative p-10 bg-[#ba2d00b0] rounded-[19px] backdrop-blur-md">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
               Appify helps to Get Your Money Working
             </h1>
-            <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto md:mx-0">
+            <p className="text-base sm:text-lg text-gray-200 max-w-xl mx-auto md:mx-0">
               With impressive interest rates, an app, tools & guides, to plan, save & invest,
               Appify is the smartest way.
             </p>
@@ -163,7 +165,7 @@ const Home = () => {
             <img
               src={headerApp}
               alt="App Interface"
-              className="max-w-[70%] sm:max-w-[60%] md:max-w-[80%] h-auto drop-shadow-2xl hover:scale-105 transition-all duration-500 relative z-10"
+              className="max-w-[70%] sm:max-w-[80%] md:max-w-[80%] h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.25)] drop-shadow-[0_0_30px_rgba(255,200,0,0.15)] hover:scale-105 transition-all duration-500 relative z-10"
             />
           </div>
         </div>

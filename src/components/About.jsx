@@ -1,5 +1,6 @@
 import React from 'react';
 import aboutImage from '../assets/images/about_nobg.png';
+import bgImage from '../assets/images/2148908769.jpg';
 import { FaCheck } from 'react-icons/fa';
 import '../index.css';
 
@@ -12,7 +13,8 @@ const About = () => {
   ];
 
   return (
-    <section id='about' className="py-20">
+    <section id='about' className="py-20 relative bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
+      <div className="absolute inset-0 bg-black/9"></div>
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Column - Image */}
@@ -22,18 +24,18 @@ const About = () => {
             <img 
               src={aboutImage} 
               alt="About MM Tasty" 
-              className="relative z-10 w-[60%] max-w-lg h-auto rounded-3xl hover:scale-105 transition-transform duration-500"
+              className="relative z-10 w-[45%] max-w-lg h-auto rounded-3xl hover:scale-105 transition-transform duration-500"
             />
           </div>
 
           {/* Right Column - Content */}
-          <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+          <div className="space-y-6 md:space-y-8 text-center md:text-left relative p-10 bg-[#ba2d00b0] rounded-[19px] backdrop-blur-md">
+            <h2 className="text-3xl md:text-4xl font-bold leading-tight text-white">
               Discover Amazing Food <br />
               Experiences with MM Tasty
             </h2>
             
-            <p className="text-gray-600 text-lg">
+            <p className="text-white text-lg">
               We're passionate about connecting food lovers with the best culinary experiences. 
               Our platform makes it easy to discover, share, and enjoy amazing food adventures.
             </p>
@@ -44,7 +46,7 @@ const About = () => {
                   <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
                     <FaCheck className="text-white text-sm" />
                   </div>
-                  <p className="text-gray-700">{feature}</p>
+                  <p className="text-white">{feature}</p>
                 </div>
               ))}
             </div>

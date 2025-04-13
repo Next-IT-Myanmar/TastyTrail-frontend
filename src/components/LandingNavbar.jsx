@@ -33,14 +33,14 @@ const Header = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white shadow-md' : 'bg-white/80 backdrop-blur-sm'
+      isScrolled ? 'bg-gradient-to-r from-white to-[#e5e5e5] shadow-[1px_2px_3px_#0000002b]' : 'bg-gradient-to-r from-white to-[#e5e5e5] backdrop-blur-sm shadow-[1px_2px_3px_#0000002b]'
     }`}>
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-2">
         <nav className="flex items-center justify-between">
           {/* Logo Section */}
           <Link to={'/'} className="flex items-center">
-            <img src={logo} alt="Logo" className="w-12 pr-2"/>
-            <span className="text-xl font-semibold text-yellow-400 ">My Tasty</span>
+            <img src={logo} alt="Logo" className="w-[82px] pr-2"/>
+            <span className="text-xl font-semibold text-[#000] font-[var(--font-family-logo)]">MM Tasty Trail</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -54,11 +54,11 @@ const Header = () => {
 
         {/* // Update Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Home</a>
-            <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Feature</a>
-            <a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">About</a>
-            <a href="#howwork" onClick={(e) => handleScroll(e, 'howwork')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">How It Work</a>
-            <a href="#testimonial" onClick={(e) => handleScroll(e, 'testimonial')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Testimonials</a>
+            <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">Home</a>
+            <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">Feature</a>
+            <a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">About</a>
+            <a href="#howwork" onClick={(e) => handleScroll(e, 'howwork')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">How It Work</a>
+            <a href="#testimonial" onClick={(e) => handleScroll(e, 'testimonial')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">Testimonials</a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -82,11 +82,11 @@ const Header = () => {
         {isOpen && (
           <div className="md:hidden mt-4">
             <div className="flex flex-col space-y-4">
-              <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Home</a>
-              <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Feature</a>
-              <a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">About</a>
-              <a href="#howwork" onClick={(e) => handleScroll(e, 'howwork')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">How It Work</a>
-              <a href="#testimonial" onClick={(e) => handleScroll(e, 'testimonial')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Testimonials</a>
+              <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">Home</a>
+              <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">Feature</a>
+              <a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">About</a>
+              <a href="#howwork" onClick={(e) => handleScroll(e, 'howwork')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">How It Work</a>
+              <a href="#testimonial" onClick={(e) => handleScroll(e, 'testimonial')} className="text-black hover:text-yellow-500 font-[500] text-[16px] transition-colors duration-300">Testimonials</a>
             </div>
           </div>
         )}

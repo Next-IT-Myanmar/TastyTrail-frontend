@@ -1,0 +1,13 @@
+/* Rubik Font Family */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap');
+/* Josefin Sans Font Family */
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-family-base: 'Rubik', sans-serif;
+  --font-family-logo: 'Josefin Sans', sans-serif;
+}
+
+body {
+  font-family: var(--font-family-base);
+}

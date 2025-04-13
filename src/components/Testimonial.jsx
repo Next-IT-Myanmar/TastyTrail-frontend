@@ -11,7 +11,7 @@ const Testimonial = () => {
       name: "Sarah Johnson",
       role: "Food Blogger",
       image: "https://randomuser.me/api/portraits/women/1.jpg",
-      content: "MM Tasty has completely transformed how I discover new restaurants. The app is intuitive and the recommendations are spot-on!",
+      content: "MM Tasty has transformed how I discover new restaurants. The app is intuitive and the recommendations are spot-on!",
       rating: 4
     },  
     {
