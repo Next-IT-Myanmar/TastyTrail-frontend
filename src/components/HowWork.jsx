@@ -1,24 +1,25 @@
 import React from 'react';
 import { FaUserPlus, FaGlobe, FaRoute } from 'react-icons/fa';
 import FeatureApp from '../assets/images/Features_app.png';
+import bgImage from '../assets/images/work_bg.jpg';
 import '../index.css'
 
 const HowWork = () => {
   const steps = [
     {
-      icon: <FaUserPlus className="text-2xl text-yellow-500" />,
+      icon: <FaUserPlus className="text-2xl text-[#f99109]" />,
       title: "Create an account",
       description: "Sign up for an account with your name, email and phone number.",
       image: FeatureApp
     },
     {
-      icon: <FaGlobe className="text-2xl text-yellow-500" />,
+      icon: <FaGlobe className="text-2xl text-[#f99109]" />,
       title: "Choose your Country",
       description: "Using your debit card, bank account, USSD, QR Code, setup your first plan.",
       image: FeatureApp
     },
     {
-      icon: <FaRoute className="text-2xl text-yellow-500" />,
+      icon: <FaRoute className="text-2xl text-[#f99109]" />,
       title: "Start food adventure",
       description: "Sit back, relax & let your money work for you all day, everyday.",
       image: FeatureApp
@@ -26,13 +27,20 @@ const HowWork = () => {
   ];
 
   return (
-    <section id='howwork' className="py-20 bg-gray-100">
+    // <section id='howwork' className="py-20 bg-gray-100">
+    <section 
+          id="howwork" 
+          className="py-20 relative bg-cover bg-center" 
+          style={{ 
+            backgroundImage: `url(${bgImage})`,
+            backgroundColor: 'rgba(255, 255, 255, 0.78)',
+            backgroundBlendMode: 'overlay'}}>
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-              Start adventuring Food Tour with <br /> MM Tasty easily in 3 minutes
+              Start Adventuring Food Tour with <br /> MM Tasty Trail easily in 3 minutes
             </h2>
             
             <div className="space-y-6">
@@ -40,7 +48,7 @@ const HowWork = () => {
                 <div key={index} className="space-y-2">
                   <div className="flex items-center gap-3">
                     {step.icon}
-                    <h3 className="text-xl font-semibold text-yellow-500">{step.title}</h3>
+                    <h3 className="text-xl font-semibold text-[#f99109]">{step.title}</h3>
                   </div>
                   <p className="text-gray-600 pl-9">
                     {step.description}

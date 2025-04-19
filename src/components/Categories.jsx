@@ -100,7 +100,7 @@ const Categories = () => {
             </button>
             <button
               onClick={() => handleModal('edit', row.original)}
-              className="text-yellow-500 hover:text-yellow-700"
+              className="text-[#f99109] hover:text-yellow-700"
             >
               <FaEdit />
             </button>
@@ -143,11 +143,11 @@ const Categories = () => {
             value={globalFilter}
             onChange={e => setGlobalFilter(e.target.value)}
             placeholder="Search categories..."
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="px-4 py-2 border rounded-lg focus:border-none focus:outline-none focus:ring-2 focus:ring-[#f99109]"
           />
           <button
             onClick={() => handleModal('create')}
-            className="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-yellow-600"
+            className="bg-[#f99109] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-yellow-600"
           >
             <FaPlus /> Add Category
           </button>
@@ -277,7 +277,7 @@ const Categories = () => {
                   onClick={() => table.setPageIndex(pageNumber - 1)}
                   className={`px-3 py-1 border rounded-lg ${
                     currentPage === pageNumber
-                      ? 'bg-yellow-500 text-white'
+                      ? 'bg-[#f99109] text-white'
                       : 'hover:bg-gray-50'
                   }`}
                 >
@@ -326,7 +326,7 @@ const Categories = () => {
                 <label className="block text-sm font-medium text-gray-700">Name</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCategory?.name}
                   readOnly={modalMode === 'view'}
                 />
@@ -334,7 +334,7 @@ const Categories = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description</label>
                 <textarea
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCategory?.description}
                   readOnly={modalMode === 'view'}
                 />
@@ -350,7 +350,7 @@ const Categories = () => {
                 {modalMode !== 'view' && (
                   <button
                     type="submit"
-                    className="px-4 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
+                    className="px-4 py-2 text-white bg-[#f99109] rounded-md hover:bg-yellow-600"
                   >
                     {modalMode === 'create' ? 'Create' : 'Update'}
                   </button>

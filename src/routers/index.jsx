@@ -13,6 +13,7 @@ import Restaurants from '../components/Restaurants';
 import Currencies from '../components/Currencies';
 import Sliders from '../components/Sliders';
 import Setting from '../components/Setting';
+import NotFound from '../pages/NotFound';
 
 
 const router = createBrowserRouter([
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <h1>Not Found</h1>,
+        element: <NotFound />,
       }
     ]
   },
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <h1>Not Found</h1>,
+        element: <NotFound />,
       }
     ]
   },
@@ -90,7 +91,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <h1>Not Found</h1>,
+        element: <NotFound />,
       }
     ]
   }

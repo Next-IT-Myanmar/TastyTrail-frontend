@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import signUpImg from '../assets/images/logo.png';
+import signUpImg from '../assets/images/origin_logo.png';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const SignUp = () => {
@@ -149,14 +149,14 @@ const SignUp = () => {
 
             <button
               type="submit"
-              className="w-full bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors duration-300"
+              className="w-full bg-[#f99109] text-white py-2 px-4 rounded-lg hover:bg-[#e17f00] transition-colors duration-300"
             >
               Sign Up
             </button>
 
             <p className="text-center text-sm text-gray-600">
               Already have an account?{' '}
-              <a href="/login" className="text-yellow-500 hover:text-yellow-600 font-semibold">
+              <a href="/login" className="text-[#f99109] hover:text-[#e17f00] font-semibold">
                 Sign in
               </a>
             </p>

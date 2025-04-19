@@ -30,6 +30,8 @@ const Restaurants = () => {
       name: 'Golden Myanmar Restaurant',
       description: 'Traditional Myanmar cuisine in a modern setting',
       phoneNumber: '123-456-7890',
+      openHour: '11:00',
+      closeHour: '22:00',
       categories: [{
         id: 1,
         name:'Thai'
@@ -72,9 +74,9 @@ const Restaurants = () => {
             key={star}
             className={`text-2xl cursor-pointer ${
               (hoverRating || value) >= star
-                ? 'text-yellow-400'
+                ? 'text-[#f99109]'
                 : 'text-gray-300'
-            } ${readOnly ? 'cursor-default' : 'hover:text-yellow-400'}`}
+            } ${readOnly ? 'cursor-default' : 'hover:text-[#f99109]'}`}
             onClick={() => !readOnly && onChange(star)}
             onMouseEnter={() => !readOnly && setHoverRating(star)}
             onMouseLeave={() => !readOnly && setHoverRating(0)}
@@ -139,7 +141,7 @@ const Restaurants = () => {
         accessorKey: 'rank',
         cell: ({ row }) => (
           <div className="flex items-center">
-            <FaStar className="text-yellow-400 mr-1" />
+            <FaStar className="text-[#f99109] mr-1" />
             {row.original.rank}
           </div>
         ),
@@ -164,7 +166,7 @@ const Restaurants = () => {
             </button>
             <button
               onClick={() => handleModal('edit', row.original)}
-              className="text-yellow-500 hover:text-yellow-700"
+              className="text-[#f99109] hover:text-yellow-700"
             >
               <FaEdit />
             </button>
@@ -232,11 +234,11 @@ const Restaurants = () => {
                 value={globalFilter}
                 onChange={e => setGlobalFilter(e.target.value)}
                 placeholder="Search restaurants..."
-                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className="px-4 py-2 border rounded-lg focus:border-none focus:outline-none focus:ring-2 focus:ring-[#f99109]"
               />
               <button
                 onClick={() => handleModal('create')}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-yellow-600"
+                className="bg-[#f99109] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-yellow-600"
               >
                 <FaPlus /> Add Restaurant
               </button>
@@ -346,7 +348,7 @@ const Restaurants = () => {
                       onClick={() => table.setPageIndex(pageNumber - 1)}
                       className={`px-3 py-1 border rounded-lg ${
                         currentPage === pageNumber
-                          ? 'bg-yellow-500 text-white'
+                          ? 'bg-[#f99109] text-white'
                           : 'hover:bg-gray-50'
                       }`}
                     >
@@ -396,7 +398,7 @@ const Restaurants = () => {
                       <label className="block text-sm font-medium text-gray-700">Name</label>
                       <input
                         type="text"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                         defaultValue={selectedRestaurant?.name}
                         readOnly={modalMode === 'view'}
                       />
@@ -408,7 +410,7 @@ const Restaurants = () => {
                         step="0.1"
                         min="0"
                         max="5"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                         defaultValue={selectedRestaurant?.rank}
                         readOnly={modalMode === 'view'}
                       />
@@ -418,7 +420,7 @@ const Restaurants = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                       rows="3"
                       defaultValue={selectedRestaurant?.description}
                       readOnly={modalMode === 'view'}
@@ -428,7 +430,7 @@ const Restaurants = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Address</label>
                     <textarea
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                       rows="2"
                       defaultValue={selectedRestaurant?.address}
                       readOnly={modalMode === 'view'}
@@ -439,7 +441,7 @@ const Restaurants = () => {
                     <label className="block text-sm font-medium text-gray-700">Map URL</label>
                     <input
                       type="url"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                       defaultValue={selectedRestaurant?.map}
                       readOnly={modalMode === 'view'}
                     />
@@ -470,7 +472,7 @@ const Restaurants = () => {
                         <button
                           type="button"
                           onClick={() => setSocialLinksCount(prev => prev + 1)}
-                          className="text-sm text-yellow-500 hover:text-yellow-600"
+                          className="text-sm text-[#f99109] hover:text-yellow-600"
                         >
                           + Add More
                         </button>
@@ -481,21 +483,21 @@ const Restaurants = () => {
                         <input
                           type="text"
                           placeholder="Platform Name"
-                          className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                          className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                           defaultValue={selectedRestaurant?.socialLinks[index]?.name}
                           readOnly={modalMode === 'view'}
                         />
                         <input
                           type="url"
                           placeholder="URL"
-                          className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                          className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                           defaultValue={selectedRestaurant?.socialLinks[index]?.url}
                           readOnly={modalMode === 'view'}
                         />
                         <input
                           type="url"
                           placeholder="Icon URL"
-                          className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                          className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
                           defaultValue={selectedRestaurant?.socialLinks[index]?.image}
                           readOnly={modalMode === 'view'}
                         />
@@ -514,7 +516,7 @@ const Restaurants = () => {
                     {modalMode !== 'view' && (
                       <button
                         type="submit"
-                        className="px-4 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
+                        className="px-4 py-2 text-white bg-[#f99109] rounded-md hover:bg-yellow-600"
                       >
                         {modalMode === 'create' ? 'Create' : 'Update'}
                       </button>

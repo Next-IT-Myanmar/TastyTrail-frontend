@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import loginImg from '../assets/images/logo.png';
+import loginImg from '../assets/images/origin_logo.png';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -95,14 +95,14 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors duration-300"
+              className="w-full bg-[#f99109] text-white py-2 px-4 rounded-lg hover:bg-[#e17f00] transition-colors duration-300"
             >
               Sign In
             </button>
 
             <p className="text-center text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link to={'/signup'} className="text-yellow-500 hover:text-yellow-600 font-semibold">
+              <Link to={'/signup'} className="text-[#f99109] hover:text-[#e17f00] font-semibold">
                 Sign up
               </Link>
             </p>

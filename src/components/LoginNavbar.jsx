@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/images/logo.png";
+import logo from "../assets/images/origin_logo.png";
 import '../index.css'
 import Login from "../pages/login";
 
@@ -30,7 +30,7 @@ const LoginHeader = () => {
           {/* Logo Section */}
           <Link to={'/'} className="flex items-center">
             <img src={logo} alt="Logo" className="w-12 pr-2"/>
-            <span className="text-xl font-semibold text-yellow-400 ">My Tasty</span>
+            <span className="text-xl font-semibold text-red-700 ">MM Tasty Trail</span>
           </Link>
 
           {/* Desktop Navigation */}

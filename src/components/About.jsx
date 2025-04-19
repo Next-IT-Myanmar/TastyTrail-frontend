@@ -30,7 +30,7 @@ const About = () => {
           <div className="space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold leading-tight">
               Discover Amazing Food <br />
-              Experiences with MM Tasty
+              Experiences with MM Tasty Trail
             </h2>
             
             <p className="text-gray-600 text-lg">
@@ -41,7 +41,7 @@ const About = () => {
             <div className="space-y-4">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3">
-                  <div className="flex-shrink-0 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                  <div className="flex-shrink-0 w-6 h-6 bg-[#f99109] rounded-full flex items-center justify-center">
                     <FaCheck className="text-white text-sm" />
                   </div>
                   <p className="text-gray-700">{feature}</p>
@@ -49,7 +49,7 @@ const About = () => {
               ))}
             </div>
 
-            <button className="mt-8 bg-yellow-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-yellow-600 transition-colors duration-300">
+            <button className="mt-8 bg-[#f99109] text-white px-8 py-3 rounded-full font-semibold hover:bg-yellow-600 transition-colors duration-300">
               Learn More
             </button>
           </div>

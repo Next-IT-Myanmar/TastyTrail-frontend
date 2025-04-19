@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { FaHome, FaBuffer, FaFunnelDollar , FaPalette ,  FaUtensils, FaFlag, FaSignOutAlt , FaCog, FaBars, FaTimes, FaUser } from 'react-icons/fa';
-import logo from '../assets/images/logo.png';
+import logo from '../assets/images/origin_logo.png';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const AdminLayout = () => {
         {/* Logo */}
         <div className="flex items-center gap-2 p-4 border-b">
           <img src={logo} alt="Logo" className="w-8 h-8" />
-          <span className="text-xl font-bold text-yellow-500">MM Tasty</span>
+          <span className="text-xl font-bold text-red-700">MM Tasty Trail</span>
         </div>
 
         {/* Menu Items */}
@@ -36,7 +36,7 @@ const AdminLayout = () => {
               href={item.path}
               className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 rounded-lg transition-colors"
             >
-              <span className="text-yellow-500">{item.icon}</span>
+              <span className="text-[#f99109]">{item.icon}</span>
               <span>{item.label}</span>
             </a>
           ))}
@@ -80,7 +80,7 @@ const AdminLayout = () => {
                     <div className="flex items-center gap-4">
                       <button
                         onClick={() => window.location.href = '/admin/settings'}
-                        className="flex items-center gap-2 text-gray-600 hover:text-yellow-500"
+                        className="flex items-center gap-2 text-gray-600 hover:text-[#f99109]"
                         title="Settings"
                       >
                         <FaCog />
@@ -88,7 +88,7 @@ const AdminLayout = () => {
                       </button>
                       <button
                         // onClick={handleLogout}
-                        className="flex items-center gap-2 text-gray-600 hover:text-yellow-500"
+                        className="flex items-center gap-2 text-gray-600 hover:text-[#f99109]"
                         title="Logout"
                       >
                         <FaSignOutAlt />

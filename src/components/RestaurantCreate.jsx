@@ -50,9 +50,9 @@ const RestaurantCreateModal = ({ onClose }) => {
             key={star}
             className={`text-2xl cursor-pointer ${
               (hoverRating || value) >= star
-                ? 'text-yellow-400'
+                ? 'text-[#f99109]'
                 : 'text-gray-300'
-            } hover:text-yellow-400`}
+            } hover:text-[#f99109]`}
             onClick={() => onChange(star)}
             onMouseEnter={() => setHoverRating(star)}
             onMouseLeave={() => setHoverRating(0)}
@@ -125,7 +125,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               <label className="block text-sm font-medium text-gray-700">Name</label>
               <input
                 type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
               />
             </div>
             <div>
@@ -137,7 +137,7 @@ const RestaurantCreateModal = ({ onClose }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700">Description</label>
             <textarea
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
               rows="3"
             />
           </div>
@@ -146,8 +146,26 @@ const RestaurantCreateModal = ({ onClose }) => {
             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
             <input
               type="tel"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
             />
+          </div>
+
+          {/* Operating Hours */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Opening Hour</label>
+              <input
+                type="time"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Closing Hour</label>
+              <input
+                type="time"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
+              />
+            </div>
           </div>
 
           <div>
@@ -277,7 +295,7 @@ const RestaurantCreateModal = ({ onClose }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700">Address</label>
             <textarea
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
               rows="2"
             />
           </div>
@@ -286,7 +304,7 @@ const RestaurantCreateModal = ({ onClose }) => {
             <label className="block text-sm font-medium text-gray-700">Map URL</label>
             <input
               type="url"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
             />
           </div>
 
@@ -313,7 +331,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               <button
                 type="button"
                 onClick={() => setSocialLinksCount(prev => prev + 1)}
-                className="text-sm text-yellow-500 hover:text-yellow-600"
+                className="text-sm text-[#f99109] hover:text-yellow-600"
               >
                 + Add More
               </button>
@@ -323,17 +341,17 @@ const RestaurantCreateModal = ({ onClose }) => {
                 <input
                   type="text"
                   placeholder="Platform Name"
-                  className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                  className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 />
                 <input
                   type="url"
                   placeholder="URL"
-                  className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                  className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 />
                 <input
                   type="url"
                   placeholder="Icon URL"
-                  className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                  className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 />
               </div>
             ))}
@@ -349,7 +367,7 @@ const RestaurantCreateModal = ({ onClose }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
+              className="px-4 py-2 text-white bg-[#f99109] rounded-md hover:bg-yellow-600"
             >
               Create
             </button>

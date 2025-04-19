@@ -9,17 +9,19 @@ import About from './components/About';
 import HowWork from './components/HowWork';
 import HomeLayout from './layouts/HomeLayout';
 import DownloadSection from './components/downloadsection';
+import ScanQr from './components/ScanQr';
 
 function App() {
 
   return (
-    <div className="pt-[72px]">
+    <div>
       <Home />
       {/* <Counter /> */}
       <Feature />
       <About />
       <HowWork />
       <Testimonial />
+      <ScanQr />
       <DownloadSection />
       {/* <CounterTwo /> */}
     </div>

@@ -49,7 +49,7 @@ const Testimonial = () => {
       className="absolute left-0 z-10 top-1/2 -translate-y-1/2 -translate-x-12 bg-white p-3 rounded-full shadow-md hover:bg-yellow-50"
       onClick={onClick}
     >
-      <FaChevronLeft className="text-yellow-500" />
+      <FaChevronLeft className="text-[#f99109]" />
     </button>
   );
 
@@ -58,7 +58,7 @@ const Testimonial = () => {
       className="absolute right-0 z-10 top-1/2 -translate-y-1/2 translate-x-12 bg-white p-3 rounded-full shadow-md hover:bg-yellow-50"
       onClick={onClick}
     >
-      <FaChevronRight className="text-yellow-500" />
+      <FaChevronRight className="text-[#f99109]" />
     </button>
   );
 
@@ -116,7 +116,7 @@ const Testimonial = () => {
                   </div>
                   
                   <div className="mb-4">
-                    <FaQuoteLeft className="text-yellow-500 text-xl mb-2" />
+                    <FaQuoteLeft className="text-[#f99109] text-xl mb-2" />
                     <p className="text-gray-600 italic">
                       {testimonial.content}
                     </p>
@@ -124,7 +124,7 @@ const Testimonial = () => {
 
                   <div className="flex items-center">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <FaStar key={i} className="text-yellow-500 mr-1" />
+                      <FaStar key={i} className="text-[#f99109] mr-1" />
                     ))}
                   </div>
                 </div>

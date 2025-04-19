@@ -38,6 +38,29 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
             <div className="mt-1 p-2 bg-gray-50 rounded-md">{restaurant?.phoneNumber}</div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Opening Hour</label>
+              <div className="mt-1 p-2 bg-gray-50 rounded-md">
+                {restaurant?.openHour && new Date(`2000/01/01 ${restaurant.openHour}`).toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: true
+                })}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Closing Hour</label>
+              <div className="mt-1 p-2 bg-gray-50 rounded-md">
+                {restaurant?.closeHour && new Date(`2000/01/01 ${restaurant.closeHour}`).toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: true
+                })}
+              </div>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Categories</label>
             <div className="mt-1 p-2 bg-gray-50 rounded-md flex flex-wrap gap-2">
