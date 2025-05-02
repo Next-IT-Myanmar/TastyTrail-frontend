@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaStar, FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { getRestaurantLists } from '../services/restaurantService';
 import {
   useReactTable,
   getCoreRowModel,
@@ -21,6 +22,7 @@ const Restaurants = () => {
   const [modalMode, setModalMode] = useState('create');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [restaurantToDelete, setRestaurantToDelete] = useState(null);
+  const [additionalImagesCount, setAdditionalImagesCount] = useState(1);
   const [socialLinksCount, setSocialLinksCount] = useState(1);
 
 
@@ -32,6 +34,8 @@ const Restaurants = () => {
       phoneNumber: '123-456-7890',
       openHour: '11:00',
       closeHour: '22:00',
+      priceRange: 3,
+      promotion: 20,
       categories: [{
         id: 1,
         name:'Thai'
@@ -40,19 +44,25 @@ const Restaurants = () => {
         id: 1,
         name:'Myanmar'
       }],
+      cuisines: [{
+        id: 1,
+        name:'hot pot'
+      }],
       image: Restaurant1,
+      otherPhoto: [
+        Restaurant1,
+        Restaurant1, 
+      ],
       map: 'https://goo.gl/maps/xyz123',
       address: '123 Yangon Street, Myanmar',
       socialLinks: [
         {
           name: 'Facebook',
           url: 'https://facebook.com/goldenMyanmar',
-          image: 'https://facebook.com/logo.png'
         },
         {
           name: 'Instagram',
           url: 'https://instagram.com/goldenMyanmar',
-          image: 'https://instagram.com/logo.png'
         }
       ],
       rank: 4,
@@ -104,6 +114,34 @@ const Restaurants = () => {
     setRestaurants(restaurants.filter(restaurant => restaurant.id !== restaurantToDelete));
     setIsDeleteModalOpen(false);
     setRestaurantToDelete(null);
+  };
+
+  const handleDeleteAdditionalImage = (index) => {
+    if (selectedRestaurant && selectedRestaurant.otherPhoto) {
+      const updatedPhotos = [...selectedRestaurant.otherPhoto];
+      updatedPhotos.splice(index, 1);
+      setSelectedRestaurant({
+        ...selectedRestaurant,
+        otherPhoto: updatedPhotos
+      });
+      setAdditionalImagesCount(prev => Math.max(1, prev - 1));
+    }
+  };
+
+  const handleAdditionalImageChange = (e, index) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const updatedPhotos = [...(selectedRestaurant?.otherPhoto || [])];
+        updatedPhotos[index] = reader.result;
+        setSelectedRestaurant({
+          ...selectedRestaurant,
+          otherPhoto: updatedPhotos
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const columns = useMemo(
@@ -462,6 +500,64 @@ const Restaurants = () => {
                         className="mt-2 h-32 w-48 object-cover rounded-lg"
                       />
                     )}
+                  </div>
+
+                  {/* Additional Images Section */}
+                  <div>
+                    <div className="flex justify-between items-center">
+                      <label className="block text-sm font-medium text-gray-700">Additional Images</label>
+                      {modalMode !== 'view' && (
+                        <button
+                          type="button"
+                          onClick={() => setAdditionalImagesCount(prev => prev + 1)}
+                          className="text-sm text-[#f99109] hover:text-yellow-600"
+                        >
+                          + Add More Images
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-2">
+                      {modalMode === 'view' ? (
+                        // View mode - just display images
+                        selectedRestaurant?.otherPhoto?.map((photo, index) => (
+                          <img
+                            key={index}
+                            src={photo}
+                            alt={`Additional ${index + 1}`}
+                            className="h-32 w-48 object-cover rounded-lg"
+                          />
+                        ))
+                      ) : (
+                        // Edit/Create mode - allow updates
+                        Array.from({ length: additionalImagesCount }).map((_, index) => (
+                          <div key={index} className="relative">
+                            {selectedRestaurant?.otherPhoto?.[index] ? (
+                              <div className="relative">
+                                <img
+                                  src={selectedRestaurant.otherPhoto[index]}
+                                  alt={`Additional ${index + 1}`}
+                                  className="h-32 w-48 object-cover rounded-lg"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteAdditionalImage(index)}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                >
+                                  <FaTimes className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="mt-1 block w-48"
+                                onChange={(e) => handleAdditionalImageChange(e, index)}
+                              />
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
 
                   {/* Social Links */}

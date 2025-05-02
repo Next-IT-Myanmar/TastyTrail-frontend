@@ -14,6 +14,7 @@ import Currencies from '../components/Currencies';
 import Sliders from '../components/Sliders';
 import Setting from '../components/Setting';
 import NotFound from '../pages/NotFound';
+import Cuisines from '../components/Cuisines';
 
 
 const router = createBrowserRouter([
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/categories",
         element: <Categories />,
+      },
+      {
+        path: "/admin/cuisines",
+        element: <Cuisines />,
       },
       {
         path: "/admin/restaurants",

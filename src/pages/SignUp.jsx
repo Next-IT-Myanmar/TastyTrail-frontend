@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../services/authService';
 import signUpImg from '../assets/images/origin_logo.png';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -11,23 +15,55 @@ const SignUp = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: []
+    roleIds: ''
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === 'checkbox') {
       const updatedRoles = checked 
-        ? [...formData.role, value]
-        : formData.role.filter(role => role !== value);
-      setFormData(prev => ({ ...prev, role: updatedRoles }));
+        ? [...formData.roleIds, value]
+        : formData.roleIds.filter(roleIds => roleIds !== value);
+      setFormData(prev => ({ ...prev, roleIds: updatedRoles }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.roleIds.length === 0) {
+      setError('Please select at least one role');
+      return;
+    }
+
+    try {
+      // Prepare user data
+     const requestBody = {
+       firstName: formData.firstName,
+       lastName: formData.lastName,
+       email: formData.email,
+       password: formData.password,
+       roleIds: formData.roleIds
+     };
+
+     //Register user
+     console.log('Sending registration request:', requestBody);
+     const response = await registerUser(requestBody);
+     console.log('Registration successful:', response.data);
+
+     // Redirect to login page
+     navigate('/login');
+    } catch (error) {
+     setError(error.response?.data?.message || 'Registration failed.Please try again.'); 
+    }
     console.log('Form data:', formData);
   };
 
@@ -45,6 +81,12 @@ const SignUp = () => {
             <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
             <p className="mt-2 text-gray-600">Join our community today</p>
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -129,19 +171,26 @@ const SignUp = () => {
             </div>
 
             <div className="space-y-2">
-              <p className="text-gray-700 font-medium">Select Role:</p>
+              <p className="text-gray-700 font-medium">Select Role
+                <span className="text-red-500">*</span>
+              </p>
               <div className="space-y-2">
-                {['admin', 'editor', 'viewer'].map((role) => (
-                  <label key={role} className="flex items-center space-x-2">
+                {[
+                  { id: "7f4c693c-d767-4b2b-8a47-2c564f823ab8", label: 'admin' },
+                  { id: 'editor', label: 'editor' },
+                  { id: 'viewer', label: 'viewer' }
+                ].map((role) => (
+                  <label key={role.id} className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      name="role"
-                      value={role}
-                      checked={formData.role.includes(role)}
+                      name="roleIds"
+                      value={role.id}
+                      checked={formData.roleIds.includes(role.id)}
                       onChange={handleChange}
                       className="w-4 h-4 text-yellow-500 border-gray-300 rounded focus:ring-yellow-500"
+                      required={formData.roleIds.length === 0}
                     />
-                    <span className="text-gray-700 capitalize">{role}</span>
+                    <span className="text-gray-700 capitalize">{role.label}</span>
                   </label>
                 ))}
               </div>

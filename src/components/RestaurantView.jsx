@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaStar } from 'react-icons/fa';
 
 const RestaurantViewModal = ({ restaurant, onClose }) => {
   return (
@@ -24,7 +25,20 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Rank</label>
-              <div className="mt-1 p-2 bg-gray-50 rounded-md">{restaurant?.rank}</div>
+              <div className="mt-1 p-2 bg-gray-50 rounded-md flex items-center">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <span
+                    key={index}
+                    className={`text-xl ${
+                      index < (restaurant?.rank || 0)
+                        ? 'text-[#f99109]'
+                        : 'text-gray-300'
+                    }`}
+                  >
+                  <FaStar />
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -61,6 +75,32 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Promotion</label>
+              <div className="mt-1 p-2 bg-gray-50 rounded-md">
+                {restaurant?.promotion ? `${restaurant.promotion}%` : 'No promotion'}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Price Range</label>
+              <div className="mt-1 p-2 bg-gray-50 rounded-md flex items-center">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <span
+                    key={index}
+                    className={`text-xl ${
+                      index < (restaurant?.priceRange || 0)
+                        ? 'text-[#f99109]'
+                        : 'text-gray-300'
+                    }`}
+                  >
+                    $
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Categories</label>
             <div className="mt-1 p-2 bg-gray-50 rounded-md flex flex-wrap gap-2">
@@ -78,6 +118,17 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
               {restaurant?.countries?.map((country, index) => (
                 <span key={index} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-sm">
                   {country.name}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Cuisines</label>
+            <div className="mt-1 p-2 bg-gray-50 rounded-md flex flex-wrap gap-2">
+              {restaurant?.cuisines?.map((cuisine, index) => (
+                <span key={index} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-sm">
+                  {cuisine.name}
                 </span>
               ))}
             </div>
@@ -107,6 +158,21 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
             )}
           </div>
 
+          {/* Add Additional Images section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Additional Images</label>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-2">
+              {restaurant?.otherPhoto?.map((photo, index) => (
+                <img
+                  key={index}
+                  src={photo}
+                  alt={`Restaurant ${index + 1}`}
+                  className="h-32 w-48 object-cover rounded-lg"
+                />
+              ))}
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Social Links</label>
             {restaurant?.socialLinks?.map((link, index) => (
@@ -116,7 +182,6 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
                   <a href={link.url} target="_blank" rel="noopener noreferrer" 
                      className="text-blue-500 hover:text-blue-600">{link.url}</a>
                 </div>
-                <div className="p-2 bg-gray-50 rounded-md">{link.image}</div>
               </div>
             ))}
           </div>

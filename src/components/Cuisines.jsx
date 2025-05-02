@@ -1,7 +1,10 @@
-import React, { useState, useMemo, useEffect} from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
-import {createCategory, getCategories, getCategoryDetail, updateCategory, deleteCategory} from '../services/categoryService';
+import { createCuisine, getCuisines, getCuisineDetail, updateCuisine, deleteCuisine } from '../services/cuisineService';
 import categoryImage from '../assets/images/bibimbap.png';
+import ramen from '../assets/images/ramen.png';
+import dish from '../assets/images/dish.png';
+import biryani from '../assets/images/biryani.png';
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,47 +14,41 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 
-const Categories = () => {
-  //Add loading state
-  const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [message, setMessage] = useState({ text: '', type: '' });
-  const [sorting, setSorting] = useState([
-    {id: 'id', desc: true} // Sort by ID in descending order by default
-  ]);
+const Cuisines = () => {
+  const [loading,setLoading] = useState(false);
+  const [cuisines, setCuisines] = useState([]);
+  const [sorting, setSorting] = useState([]);
+  const [message, setMessage] = useState({text:'', type: ''})
   const [globalFilter, setGlobalFilter] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create');
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [selectedCuisine, setSelectedCuisine] = useState(null);
+  const [cuisineToDelete, setCuisineToDelete] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    image: null, 
-  });
-  // Update initial pageInfo state
-  const [pageInfo, setPageInfo] = useState({
+    image: null,
+  })
+  const [pageInfo,setPageInfo] = useState({
     currentPage: 1,
     limit: 10,
     total: 0,
-    totalPages: 1
-  });
-  
+    totalPages: 1,
+  })
 
-   // Update fetchCategories function
-   const fetchCategories = async () => {
+  const fetchCuisines = async () => {
     try {
       setLoading(true);
-      const response = await getCategories(pageInfo.currentPage, pageInfo.limit);
-      
-      if (response && response.data) {
-        const sortedData = [...response.data].sort((a, b) => b.id - a.id);
-        setCategories(sortedData);
-        
+      const response = await getCuisines(pageInfo.currentPage, pageInfo.limit);
+
+      if(response && response.data) {
+        const sortedData = [...response.data].sort((a,b) => b.id - a.id);
+        setCuisines(sortedData);
+
         // Update pagination info with the values from response.pagination
-        setPageInfo(prev => ({
+        setPageInfo( prev => ({
           ...prev,
           total: response.pagination.total,
           currentPage: response.pagination.page,
@@ -60,97 +57,74 @@ const Categories = () => {
         }));
       }
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.log('Fetch Error:',error)
       setMessage({
-        text: error.response?.message || 'Failed to fetch categories',
+        text: error.response?.message || 'Failed to fetch cuisines',
         type: 'error'
-      });
+      })
     } finally {
       setLoading(false);
     }
-  };
-
-  // Update handlePageChange function
-  const handlePageChange = (newPage) => {
-    const totalPages = Math.ceil(pageInfo.total / pageInfo.limit);
-    if (newPage >= 1 && newPage <= totalPages) {
-      setPageInfo(prev => ({ ...prev, currentPage: newPage }));
-    }
-  };
-
-  // Update handleLimitChange function
-  const handleLimitChange = (newLimit) => {
-    setPageInfo(prev => ({
-      ...prev,
-      limit: newLimit,
-      currentPage: 1,
-      totalPages: Math.ceil(prev.total / newLimit)
-    }));
-  };
-
-  // Add this function to handle form input changes
-  const handleFormChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === 'file') {
-      const file = files[0];
-      setFormData(prev => ({ ...prev, img: file }));
-      handleImageChange(e);
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-  };
-   
-  // let response = [];
-
-  // the form submission in the modal
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+    try{
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
       formDataToSend.append('description', formData.description);
-      if (formData.img instanceof File) {
-        formDataToSend.append('img', formData.img);
+      if (formData.image instanceof File) {
+        formDataToSend.append('image', formData.image);
       }
 
       let response;
       if (modalMode === 'edit') {
-        response = await updateCategory(selectedCategory.id, formDataToSend);
-        console.log("Update response", response)
+        response = await updateCuisine(selectedCuisine.id, formDataToSend);
+        console.log('Updated Cuisine:', response.data);
         // Update the categories list with the updated item
-        setCategories(prev => prev.map(cat => 
-          cat.id === selectedCategory.id ? response : cat
-        ));
+        setCuisines(prev => prev.map(cuisine => 
+          cuisine.id === response.data.id ? response : cuisine
+        ));   
       } else {
-        response = await createCategory(formDataToSend);
-        setCategories(prev => [...prev, response]);
+        response = await createCuisine(formDataToSend);
+        setCuisines(prev => [...prev, response])     
       }
 
       // Refresh the list to get updated data including new image paths
-      fetchCategories();
-      
-      setMessage({ 
-        text: response.message || `Category ${modalMode === 'edit' ? 'updated' : 'created'} successfully`, 
-        type: 'success' 
+      fetchCuisines();
+
+      setMessage({
+        text: response.message || `Cuisine ${modalMode === 'edit' ? 'Updated' : 'Created'} successfully`,
+        type: 'success'
       });
-      
+
       setIsModalOpen(false);
-      setFormData({ name: '', description: '', img: null });
+      setFormData({ name: '',description: '',image: null});
       setPreviewImage(null);
 
       // Clear success message after 3 seconds
-      setTimeout(() => {
-        setMessage({ text: '', type: '' });
+      setTimeout( () => {
+        setMessage({text: '', type: ''});
       }, 3000);
     } catch (error) {
-      console.error(`Error ${modalMode === 'edit' ? 'updating' : 'creating'} category:`, error);
-      setMessage({ 
-        text: error.response?.message || `Failed to ${modalMode === 'edit' ? 'update' : 'create'} category`, 
-        type: 'error' 
+      console.error(`Error ${modalMode === 'edit' ? 'updating' : 'creating'} cuisine:`, error);
+      setMessage({
+        text: error.response?.message || `Failed to ${modalMode === 'edit' ? 'updating' : 'creating'} cuisine`,
+        type: 'error'
       });
     }
-};
+  };
+
+  const handleFormChange = (e) => {
+    const {name, value, type, files} = e.target;
+    if(type === 'file'){
+      const file = files[0];
+      setFormData(prev => ({...prev, image: file}));
+      handleImageChange(e);
+    } else {
+      setFormData(prev => ({...prev, [name] : value}));
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -163,95 +137,86 @@ const Categories = () => {
     }
   };
 
+  const handlePageChange = (newPage) => {
+    const totalPages = Math.ceil(pageInfo.total / pageInfo.limit);
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPageInfo(prev => ({...prev, currentPage: newPage}));
+    }
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setPageInfo( prev => ({
+      ...prev,
+      limit: newLimit,
+      currentPage: 1,
+      totalPages: Math.ceil(prev.total / newLimit)
+    }));
+  };
+
   const handleModal = async (mode, category = null) => {
     setModalMode(mode);
-    setSelectedCategory(category);
+    setSelectedCuisine(category);
     
-    if (mode === 'view') {
+    if(mode === 'view') {
       try {
-        const categoryDetail = await getCategoryDetail(category.id);
+        const cuisineDetail = await getCuisineDetail(category.id);
         setFormData({
-          name: categoryDetail.name || '',
-          description: categoryDetail.description || '',
-          img: categoryDetail.img ? `${import.meta.env.VITE_API_BASE_URL}/${categoryDetail.img}` : ''
+          name: cuisineDetail.data.name || '',
+          description: cuisineDetail.data.description || '',
+          image: cuisineDetail.data.image ? `${import.meta.env.VITE_API_BASE_URL}/${cuisineDetail.image}` : ''
         });
       } catch (error) {
-        console.error('Error fetching category details:', error);
+        console.error('Error fetching cuisine detail:', error);
         setMessage({
-          text: error.response?.data?.message || 'Failed to fetch category details',
+          text: error.response?.data?.message || 'Failed to fetch cuisine detail',
           type: 'error'
         });
       }
     } else if (mode === 'edit') {
       setFormData({
-        name: category?.name || '',
-        description: category?.description || '',
-        img: `${import.meta.env.VITE_API_BASE_URL}/${category?.img}` || ''
+        name: category.name || '',
+        description: category.description || '',
+        image: category.image? `${import.meta.env.VITE_API_BASE_URL}/${category.image}` : ''
       });
     } else {
-      setFormData({ name: '', description: '', img: null });
+      setFormData({ name: '', description: '', image: null });
     }
     setIsModalOpen(true);
   };
 
   const handleDelete = (id) => {
-    setCategoryToDelete(id);
+    setCuisineToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
   const confirmDelete = async () => {
     try {
-      await deleteCategory(categoryToDelete);
-      setCategories(categories.filter(category => category.id !== categoryToDelete));
+      await deleteCuisine(cuisineToDelete);
+      setCuisines(cuisines.filter(cuisine => cuisine.id !== cuisineToDelete));
       setMessage({
-        text: 'Category deleted successfully',
+        text: 'Cuisine deleted successfully',
         type: 'success'
       });
-      fetchCategories(); // Refresh the list
+      fetchCuisines(); // Refresh the list
     } catch (error) {
-      console.error('Error deleting category:', error);
+      console.error('Error deleting cuisine:', error);
       setMessage({
-        text: error.response?.data?.message || 'Failed to delete category',
+        text: error.response?.data?.message || 'Failed to delete cuisine',
         type: 'error'
       });
     } finally {
       setIsDeleteModalOpen(false);
-      setCategoryToDelete(null);
+      setCuisineToDelete(null);
     }
   };
 
-  // Fetch categories function
-  // const fetchCategories = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await getCategories(pageInfo.currentPage, pageInfo.limit);
-      
-  //     if (Array.isArray(response.data)) {
-  //       // Sort the array in descending order by id
-  //       const sortedData = [...response.data].sort((a, b) => b.id - a.id);
-  //       setCategories(sortedData);
-        
-  //       // Update pagination info with the total count from the API
-  //       const totalCount = response.total || response.data.length;
-  //       setPageInfo(prev => ({
-  //         ...prev,
-  //         total: totalCount,
-  //         totalPages: Math.ceil(totalCount / prev.limit),
-  //         currentPage: prev.currentPage > Math.ceil(totalCount / prev.limit)
-  //           ? Math.ceil(totalCount / prev.limit) 
-  //           : prev.currentPage
-  //       }));
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch error:', error);
-  //     setMessage({
-  //       text: error.response?.message || 'Failed to fetch categories',
-  //       type: 'error'
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    fetchCuisines();
+  },[]);
+
+  useEffect(() => {
+    fetchCuisines();
+  },[pageInfo.limit, pageInfo.currentPage]);
 
   // Add useEffect for auto-dismissing notifications
   useEffect(() => {
@@ -264,16 +229,6 @@ const Categories = () => {
     }
   }, [message]);
 
-  // Update useEffect to refetch when page changes
-  useEffect(() => {
-    fetchCategories();
-  }, [pageInfo.limit, pageInfo.currentPage]); // Add dependencies to trigger refetch
-
-  // Initial fetch
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   const columns = useMemo(
     () => [
       {
@@ -284,20 +239,14 @@ const Categories = () => {
       },
       {
         header: 'IMAGE',
-        accessorKey: 'img',
-        cell: ({ row }) => {
-          const imageUrl = row.original.img || row.original.image;
-          // console.log("image url", import.meta.env.VITE_API_BASE_URL+"/"+imageUrl);
-          
-          
-          return (
-            <img
-              src={`${import.meta.env.VITE_API_BASE_URL}/${imageUrl}`}
-              alt={row.original.name}
-              className="h-16 w-16 object-cover rounded-lg"
-            />
-          );
-        },
+        accessorKey: 'image',
+        cell: ({ row }) => (
+          <img
+            src={row.original.image}
+            alt={row.original.name}
+            className="h-16 w-16 object-cover rounded-lg"
+          />
+        ),
       },
       {
         header: 'ID',
@@ -348,31 +297,30 @@ const Categories = () => {
     []
   );
 
-  // Fix the table configuration
   const table = useReactTable({
-    data: categories || [],
+    data: cuisines,
     columns,
     state: {
       sorting,
       globalFilter,
       pagination: {
         pageIndex: pageInfo.currentPage - 1,
-        pageSize: pageInfo.limit,
+        pageSize: pageInfo.limit
       },
     },
     onPaginationChange: (updater) => {
       if (typeof updater === 'function') {
         const nextState = updater({
           pageIndex: pageInfo.currentPage - 1,
-          pageSize: pageInfo.limit,
+          pageSize: pageInfo.limit
         });
-        handlePageChange(nextState.pageIndex + 1);
+        handlePageChange(nextState.pageIndex +1)
       } else {
         handlePageChange(updater.pageIndex + 1);
       }
     },
     manualPagination: true,
-    pageCount: Math.ceil(pageInfo.total / pageInfo.limit), // Fix the page count calculation
+    pageCount: Math.ceil(pageInfo.total / pageInfo.limit),
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
@@ -410,31 +358,26 @@ const Categories = () => {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Categories</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Cuisines</h1>
         <div className="flex gap-4">
           <input
             type="text"
             value={globalFilter}
             onChange={e => setGlobalFilter(e.target.value)}
-            placeholder="Search categories..."
+            placeholder="Search cuisines..."
             className="px-4 py-2 border rounded-lg focus:border-none focus:outline-none focus:ring-2 focus:ring-[#f99109]"
           />
           <button
             onClick={() => handleModal('create')}
             className="bg-[#f99109] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-yellow-600"
           >
-            <FaPlus /> Add Category
+            <FaPlus /> Add Cuisine
           </button>
         </div>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow">
-      {loading ? (
-          <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f99109]"></div>
-          </div>
-        ) : (
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map(headerGroup => (
@@ -469,7 +412,6 @@ const Categories = () => {
             ))}
           </tbody>
         </table>
-        )}
       </div>
 
       {/* Pagination */}
@@ -493,7 +435,7 @@ const Categories = () => {
 
         <div className="flex gap-1">
           <button
-            onClick={() => handlePageChange(pageInfo.currentPage - 1)}
+            onClick={() => handlePageChange(pageInfo.currentPage -1)}
             disabled={pageInfo.currentPage === 1}
             className="px-3 py-1 border rounded-lg disabled:opacity-50"
           >
@@ -517,36 +459,23 @@ const Categories = () => {
 
           {/* Numbered Pagination with Ellipsis */}
           {(() => {
-            // Calculate totalPages based on total items and limit
             const totalItems = pageInfo.total ?? 0;
             const itemsPerPage = pageInfo.limit ?? 1;
             const totalPages = Math.ceil(totalItems / itemsPerPage);
             const currentPage = pageInfo.currentPage ?? 1;
             const pageNumbers = [];
 
-            if (totalPages === 0) return null; // Nothing to render
-
-            console.log("totalItems", totalItems);
-            console.log("itemsPerPage", itemsPerPage);
-            console.log("totalPages", totalPages);
-            console.log("currentPage", currentPage);
-            console.log("pageNumbers", pageNumbers);
-            
             if (totalPages <= 7) {
-              // Show all pages if total pages are 7 or less
               for (let i = 1; i <= totalPages; i++) {
                 pageNumbers.push(i);
               }
             } else {
-              // Rest of the pagination logic remains the same
-              // Always show first page
               pageNumbers.push(1);
               
               if (currentPage > 3) {
                 pageNumbers.push('...');
               }
               
-              // Show pages around current page
               for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
                 pageNumbers.push(i);
               }
@@ -555,7 +484,6 @@ const Categories = () => {
                 pageNumbers.push('...');
               }
               
-              // Always show last page if there's more than one page
               if (totalPages > 1) {
                 pageNumbers.push(totalPages);
               }
@@ -611,13 +539,13 @@ const Categories = () => {
             </button>
 
             <h2 className="text-xl font-bold mb-4 pr-8">
-              {modalMode === 'create' ? 'Add New Category' : 
-               modalMode === 'edit' ? 'Edit Category' : 'Category Details'}
+              {modalMode === 'create' ? 'Add New Cuisine' : 
+               modalMode === 'edit' ? 'Edit Cuisine' : 'Cuisine Details'}
             </h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Name
-                  <span className="text-red-500">*</span>
+                    <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -625,44 +553,44 @@ const Categories = () => {
                   value={formData.name}
                   onChange={handleFormChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                  defaultValue={selectedCategory?.name}
+                  defaultValue={selectedCuisine?.name}
                   readOnly={modalMode === 'view'}
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description
-                  <span className="text-red-500">*</span>
+                    <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleFormChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                  defaultValue={selectedCategory?.description}
+                  defaultValue={selectedCuisine?.description}
                   readOnly={modalMode === 'view'}
                   required
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category Image
-                  <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700">Cuisine Image
+                    <span className="text-red-500">*</span>
                 </label>
                 <div className="mt-1 space-y-2">
                   <input
                     type="file"
-                    name="img"
-                    onChange={handleFormChange}
+                    name="image"
                     className="mt-1 block w-full"
-                    accept="img/*"
+                    accept="image/*"
+                    onChange={handleFormChange}
                     disabled={modalMode === 'view'}
                     required={modalMode === 'create'}
                   />
-                  {(modalMode === 'view' || modalMode === 'edit') && selectedCategory?.img && (
+                  {(modalMode === 'view' || modalMode === 'edit') && selectedCuisine?.image && (
                     <img
-                      src={`${import.meta.env.VITE_API_BASE_URL}/${selectedCategory.img}`}
-                      alt="Category"
+                      src={`${import.meta.env.VITE_API_BASE_URL}/${selectedCuisine.image}`}
+                      alt="Cuisine"
                       className="mt-2 h-32 w-full object-cover rounded-lg"
                     />
                   )}
@@ -741,4 +669,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default Cuisines;

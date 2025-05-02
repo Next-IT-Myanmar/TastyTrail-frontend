@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { FaHome, FaBuffer, FaFunnelDollar , FaPalette ,  FaUtensils, FaFlag, FaSignOutAlt , FaCog, FaBars, FaTimes, FaUser } from 'react-icons/fa';
+import { FaHome, FaBuffer, FaFunnelDollar , FaPalette ,FaPizzaSlice , FaUtensils, FaFlag, FaSignOutAlt , FaCog, FaBars, FaTimes, FaUser } from 'react-icons/fa';
 import logo from '../assets/images/origin_logo.png';
 
 const AdminLayout = () => {
@@ -11,9 +11,10 @@ const AdminLayout = () => {
     { icon: <FaHome />, label: 'Dashboard', path: '/admin' },
     { icon: <FaBuffer />, label: 'Categories', path: '/admin/categories' },
     { icon: <FaFlag />, label: 'Countries', path: '/admin/countries' },
+    { icon: <FaPizzaSlice />, label: 'Cuisines', path: '/admin/cuisines' },
     { icon: <FaUtensils />, label: 'Restaurants', path: '/admin/restaurants' },
     { icon: <FaFunnelDollar />, label: 'Currencies', path: '/admin/currencies' },
-    { icon: < FaPalette/>, label: 'Sliders', path: '/admin/sliders' }
+    { icon: < FaPalette/>, label: 'Special Offers', path: '/admin/sliders' }
   ];
 
   return (
@@ -78,14 +79,14 @@ const AdminLayout = () => {
                     </div>
                     
                     <div className="flex items-center gap-4">
-                      <button
+                      {/* <button
                         onClick={() => window.location.href = '/admin/settings'}
                         className="flex items-center gap-2 text-gray-600 hover:text-[#f99109]"
                         title="Settings"
                       >
                         <FaCog />
                         <span className="hidden sm:inline">Settings</span>
-                      </button>
+                      </button> */}
                       <button
                         // onClick={handleLogout}
                         className="flex items-center gap-2 text-gray-600 hover:text-[#f99109]"

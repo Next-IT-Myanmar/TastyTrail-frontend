@@ -307,31 +307,40 @@ const Sliders = () => {
             </h2>
             <form className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="block text-sm font-medium text-gray-700">Title
+                  <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedSlider?.title}
                   readOnly={modalMode === 'view'}
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label className="block text-sm font-medium text-gray-700">Description
+                  <span className="text-red-500">*</span>
+                </label>
                 <textarea
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   rows="3"
                   defaultValue={selectedSlider?.description}
                   readOnly={modalMode === 'view'}
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image</label>
+                <label className="block text-sm font-medium text-gray-700">Image
+                  <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="file"
                   className="mt-1 block w-full"
                   accept="image/*"
                   onChange={handleImageChange}
                   disabled={modalMode === 'view'}
+                  required={modalMode === 'create'}
                 />
                 {(modalMode === 'view' || modalMode === 'edit') ? (
                   <img

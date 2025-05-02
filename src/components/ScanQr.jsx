@@ -7,7 +7,6 @@ import qrBg from '../assets/images/qr_background.jpg';
 const ScanQr = () => {
   return (
     <section 
-      id="download"
       className="py-20 bg-cover bg-center bg-no-repeat relative"
       style={{ 
         backgroundImage: `url(${qrBg})`,

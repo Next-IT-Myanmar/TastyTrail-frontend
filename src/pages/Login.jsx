@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import loginImg from '../assets/images/origin_logo.png';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import {loginUser} from '../services/authService';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState({text:'', type:''});
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -18,10 +21,26 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login data:', formData);
+    try {
+      const response = await loginUser(formData);
+      console.log('Login response:', response);
+      
+      if (response?.data?.accessToken) {
+        localStorage.setItem('access_token', response.data.accessToken);
+        localStorage.setItem('refresh_token', response.data.refreshToken);
+        navigate('/admin');
+      } else {
+        throw new Error('Invalid login response');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      setMessage({
+        text: error?.response?.data?.message || 'Login failed. Please check your credentials.', 
+        type: 'error' 
+      });
+    }
   };
 
   return (
@@ -42,6 +61,13 @@ const Login = () => {
             <h2 className="text-3xl font-bold text-gray-900">Welcome Back!</h2>
             <p className="mt-2 text-gray-600">Please sign in to your account</p>
           </div>
+          {message.text && (
+            <div className={`mb-4 p-3 rounded-lg ${
+              message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            }`}>
+              {message.text}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="relative">

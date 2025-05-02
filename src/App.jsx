@@ -21,7 +21,7 @@ function App() {
       <About />
       <HowWork />
       <Testimonial />
-      <ScanQr />
+      {/* <ScanQr /> */}
       <DownloadSection />
       {/* <CounterTwo /> */}
     </div>
