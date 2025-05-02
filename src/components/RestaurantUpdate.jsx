@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaStar, FaTimes, FaChevronDown } from 'react-icons/fa';
+import { updateRestaurant } from '../services/restaurantService';
 
 const RestaurantUpdateModal = ({ restaurant, onClose }) => {
   const [socialLinksCount, setSocialLinksCount] = useState(restaurant?.socialLinks?.length || 1);

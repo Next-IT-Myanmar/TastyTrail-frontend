@@ -1,6 +1,9 @@
-import React, { useState,useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaStar, FaTimes, FaChevronDown } from 'react-icons/fa';
-
+import { createRestaurant } from '../services/restaurantService';
+import { getCategories } from '../services/categoryService';
+import { getCountries } from '../services/countryService';
+import { getCuisines } from '../services/cuisineService';
 const RestaurantCreateModal = ({ onClose }) => {
   const [errors, setErrors] = useState({
     categories: false,
@@ -31,34 +34,58 @@ const RestaurantCreateModal = ({ onClose }) => {
   const categoriesRef = useRef(null);
   const countriesRef = useRef(null);
 
-  const optionsCategories = [
-    { id: 1, name: 'Option 1' },
-    { id: 2, name: 'Option 2' },
-    { id: 3, name: 'Option 3' },
-    { id: 4, name: 'Another Option' },
-    { id: 5, name: 'Something Else' },
-    { id: 6, name: 'Last Option' },
-  ];
+  // Add new states for API data
+  const [categories, setCategories] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [cuisines, setCuisines] = useState([]);
+  const [loading, setLoading] = useState({
+    categories: false,
+    countries: false,
+    cuisines: false
+  });
+
+  // const optionsCategories = [
+  //   { id: 1, name: 'Option 1' },
+  //   { id: 2, name: 'Option 2' },
+  //   { id: 3, name: 'Option 3' },
+  //   { id: 4, name: 'Another Option' },
+  //   { id: 5, name: 'Something Else' },
+  //   { id: 6, name: 'Last Option' },
+  // ];
   
-  const optionCuisines = [
-    { id: 1, name: 'Mala Xiang Guo' },
-    { id: 2, name: 'Noodle Soup' },
-    { id: 3, name: 'Hot Pot' },
-    { id: 4, name: 'Dim Sum' },
-    { id: 5, name: 'Sushi' },
-    { id: 6, name: 'BBQ' },
-  ];
+  // const optionCuisines = [
+  //   { id: 1, name: 'Mala Xiang Guo' },
+  //   { id: 2, name: 'Noodle Soup' },
+  //   { id: 3, name: 'Hot Pot' },
+  //   { id: 4, name: 'Dim Sum' },
+  //   { id: 5, name: 'Sushi' },
+  //   { id: 6, name: 'BBQ' },
+  // ];
 
-  const optionCountries = [
-    { id: 1, name: 'Option 1' },
-    { id: 2, name: 'Option 2' },
-    { id: 3, name: 'Option 3' }, 
-  ]
+  // const optionCountries = [
+  //   { id: 1, name: 'Option 1' },
+  //   { id: 2, name: 'Option 2' },
+  //   { id: 3, name: 'Option 3' }, 
+  // ];
 
-  const filteredCuisinesOptions = optionCuisines.filter(option =>
-    option.name.toLowerCase().includes(cuisineSearchTerm.toLowerCase()) &&
-    !selectedCuisines.some(item => item.id === option.id)
-  );
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    img: null,
+    otherPhoto: [],
+    map: '',
+    address: '',
+    openHour: '',
+    closeHour: '',
+    rank: 0,
+    priceRate: 0,
+    isPromotion: false,
+    promoRate: 0,
+    categoryIds: '',
+    countryIds: '',
+    cuisineIds: '',
+    socialLink: '',
+  })
 
   const handleCuisinesSelect = (option) => {
     setSelectedCuisines([...selectedCuisines, option]);
@@ -109,6 +136,14 @@ const RestaurantCreateModal = ({ onClose }) => {
   const handleAdditionalImageChange = (e, index) => {
     const file = e.target.files[0];
     if (file) {
+      // Update formData state with the new file
+      setFormData(prev => {
+        const newOtherPhoto = [...prev.otherPhoto];
+        newOtherPhoto[index] = file;
+        return { ...prev, otherPhoto: newOtherPhoto };
+      });
+
+      // Update preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setAdditionalImagePreviews(prev => {
@@ -165,6 +200,52 @@ const RestaurantCreateModal = ({ onClose }) => {
     );
   };
 
+  // Fetch data when component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(prev => ({ ...prev, categories: true }));
+        const categoriesResponse = await getCategories();
+        setCategories(categoriesResponse.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(prev => ({ ...prev, categories: false }));
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(prev => ({ ...prev, countries: true }));
+        const countriesResponse = await getCountries();
+        setCountries(countriesResponse.data);
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      } finally {
+        setLoading(prev => ({ ...prev, countries: false }));
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(prev => ({ ...prev, cuisines: true }));
+        const cuisinesResponse = await getCuisines();
+        setCuisines(cuisinesResponse.data);
+      } catch (error) {
+        console.error('Error fetching cuisines:', error);
+      } finally {
+        setLoading(prev => ({ ...prev, cuisines: false }));
+      }
+    };
+    fetchData();
+  }, []);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -183,14 +264,20 @@ const RestaurantCreateModal = ({ onClose }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filteredCategoriesOptions = optionsCategories.filter(option => 
+  // Update the filtered options to use API data
+  const filteredCategoriesOptions = categories.filter(option => 
     option.name.toLowerCase().includes(categorySearchTerm.toLowerCase()) &&
     !selectedCategories.some(item => item.id === option.id)
   );
 
-  const filteredCountriesOptions = optionCountries.filter(option =>
+  const filteredCountriesOptions = countries.filter(option =>
     option.name.toLowerCase().includes(countrySearchTerm.toLowerCase()) &&
     !selectedCountries.some(item => item.id === option.id)
+  );
+
+  const filteredCuisinesOptions = cuisines.filter(option =>
+    option.name.toLowerCase().includes(cuisineSearchTerm.toLowerCase()) &&
+    !selectedCuisines.some(item => item.id === option.id)
   );
 
   const handleCategoriesSelect = (option) => {
@@ -211,9 +298,9 @@ const RestaurantCreateModal = ({ onClose }) => {
     setSelectedCountries(selectedCountries.filter(item => item.id!== optionToRemove.id));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Reset errors
     setErrors({
       categories: false,
@@ -224,15 +311,15 @@ const RestaurantCreateModal = ({ onClose }) => {
     // Validate required fields
     let hasErrors = false;
     if (selectedCategories.length === 0) {
-      setErrors(prev => ({ ...prev, categories: true }));
+      setErrors(prev => ({...prev, categories: true }));
       hasErrors = true;
     }
     if (selectedCountries.length === 0) {
-      setErrors(prev => ({ ...prev, countries: true }));
+      setErrors(prev => ({...prev, countries: true }));
       hasErrors = true;
     }
     if (selectedCuisines.length === 0) {
-      setErrors(prev => ({ ...prev, cuisines: true }));
+      setErrors(prev => ({...prev, cuisines: true }));
       hasErrors = true;
     }
 
@@ -240,8 +327,75 @@ const RestaurantCreateModal = ({ onClose }) => {
       return;
     }
 
-    // Continue with form submission
-    // ... rest of your submit logic
+    try {
+      const formDataToSend = new FormData();
+      
+      // Update formData state with form values
+      const updatedFormData = {
+        name: e.target.name.value,
+        description: e.target.description.value,
+        phoneNumber: e.target.phoneNumber.value,
+        address: e.target.address.value,
+        map: e.target.map.value,
+        openHour: e.target.openHour.value,
+        closeHour: e.target.closeHour.value,
+        rank: rating,
+        priceRate: priceRate,
+        isPromotion: e.target.promotion?.value > 0,
+        promoRate: e.target.promotion?.value || 0,
+        categoryIds: selectedCategories.map(cat => cat.id).join(','),
+        countryIds: selectedCountries.map(country => country.id).join(','),
+        cuisineIds: selectedCuisines.map(cuisine => cuisine.id).join(','),
+      };
+
+      // Update the formData state
+      setFormData(prevData => ({
+        ...prevData,
+        ...updatedFormData
+      }));
+
+      // Append all form data
+      Object.keys(updatedFormData).forEach(key => {
+        formDataToSend.append(key, updatedFormData[key]);
+      });
+
+      // Handle main image
+      const mainImageInput = e.target.querySelector('input[type="file"]');
+      if (mainImageInput?.files[0]) {
+        formDataToSend.append('img', mainImageInput.files[0]);
+      }
+
+      // // Handle additional images
+      // const additionalImageInputs = Array.from(e.target.querySelectorAll('input[type="file"]')).slice(1);
+      // additionalImageInputs.forEach((input) => {
+      //   if (input.files[0]) {
+      //     formDataToSend.append('otherPhoto', input.files[0]);
+      //   }
+      // });
+
+      // Handle additional images
+      formData.otherPhoto.forEach((file) => {
+        if (file) {
+          formDataToSend.append('otherPhoto', file);
+        }
+      });
+
+      // Handle social links
+      const socialLinks = Array.from({ length: socialLinksCount }).map((_, index) => ({
+        platform: e.target[`platform${index}`]?.value,
+        url: e.target[`url${index}`]?.value,
+      })).filter(link => link.platform && link.url);
+      formDataToSend.append('socialLink', JSON.stringify(socialLinks));
+
+      // Call the API
+      const response = await createRestaurant(formDataToSend);
+      console.log('Restaurant created successfully:', response);
+      
+      onClose();
+      
+    } catch (error) {
+      console.error('Error creating restaurant:', error);
+    }
   };
 
   return (
@@ -265,6 +419,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               </label>
               <input
                 type="text"
+                name="name"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 required
               />
@@ -280,6 +435,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               <span className="text-red-500">*</span>
             </label>
             <textarea
+              name="description"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
               rows="3"
               required
@@ -292,7 +448,8 @@ const RestaurantCreateModal = ({ onClose }) => {
             </label>
             <input
               type="tel"
-              pattern="[0-9-]{1,20}"
+              name="phoneNumber"
+              pattern="[0-9\-]{1,20}"
               maxLength={20}
               onKeyDown={(e) => {
                 // Allow: backspace, delete, tab, escape, enter
@@ -337,6 +494,7 @@ const RestaurantCreateModal = ({ onClose }) => {
                 <span className="text-red-500">*</span>
               </label>
               <input
+                name="openHour"
                 type="time"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 required
@@ -348,6 +506,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               </label>
               <input
                 type="time"
+                name="closeHour"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 required
               />
@@ -362,6 +521,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               <label className="block text-sm font-medium text-gray-700">Promotion (%)</label>
               <input
                 type="number"
+                name="promotion"
                 min="0"
                 max="100"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
@@ -580,6 +740,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               <span className="text-red-500">*</span>
             </label>
             <textarea
+              name="address"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
               rows="2"
               required
@@ -591,6 +752,7 @@ const RestaurantCreateModal = ({ onClose }) => {
               <span className="text-red-500">*</span>
             </label>
             <input
+              name="map"
               type="url"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
               required
@@ -673,11 +835,13 @@ const RestaurantCreateModal = ({ onClose }) => {
             {Array.from({ length: socialLinksCount }).map((_, index) => (
               <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
                 <input
+                  name={`platform${index}`}
                   type="text"
                   placeholder="Platform Name"
                   className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 />
                 <input
+                  name={`url${index}`}
                   type="url"
                   placeholder="URL"
                   className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"

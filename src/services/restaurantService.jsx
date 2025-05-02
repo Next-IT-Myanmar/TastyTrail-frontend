@@ -21,7 +21,7 @@ export const getRestaurantLists = async (page = 1, limit = 10) => {
                 limit,
             },
         });
-        return response.data;
+        return response;
     } catch (error) {
         throw error;
     }
@@ -29,7 +29,7 @@ export const getRestaurantLists = async (page = 1, limit = 10) => {
 
 export const updateRestaurant = async (id, formData) => {
     try {
-        const response = await api.patch('/restaurants/${id}', formData,{
+        const response = await api.patch(`/restaurants/${id}`, formData,{
             headers: {
                 'Content-Type':'multipart/form-data',
             },
@@ -42,8 +42,8 @@ export const updateRestaurant = async (id, formData) => {
 
 export const getRestaurantDetail = async (id) => {
     try {
-        const response = await api.get('/restaurants/${id}');
-        return response;
+        const response = await api.get(`/restaurants/${id}`);
+        return response.data;
     } catch (error) {
         throw error;
     }

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaStar, FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
 import { getRestaurantLists } from '../services/restaurantService';
 import {
@@ -10,12 +10,14 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import Restaurant1 from '../assets/images/restaurants/restaurant1.jpg';
-import RestaurantView from './RestaurantView';
+import RestaurantView from './restaurantview';
 import RestaurantCreate from './RestaurantCreate';
 import RestaurantUpdate from './RestaurantUpdate';
 
 const Restaurants = () => {
-  const [sorting, setSorting] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [restaurants, setRestaurants] = useState([]);
+  const [sorting, setSorting] = useState([])
   const [globalFilter, setGlobalFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -24,56 +26,51 @@ const Restaurants = () => {
   const [restaurantToDelete, setRestaurantToDelete] = useState(null);
   const [additionalImagesCount, setAdditionalImagesCount] = useState(1);
   const [socialLinksCount, setSocialLinksCount] = useState(1);
-
-
-  const [restaurants, setRestaurants] = useState([
-    {
-      id: 1,
-      name: 'Golden Myanmar Restaurant',
-      description: 'Traditional Myanmar cuisine in a modern setting',
-      phoneNumber: '123-456-7890',
-      openHour: '11:00',
-      closeHour: '22:00',
-      priceRange: 3,
-      promotion: 20,
-      categories: [{
-        id: 1,
-        name:'Thai'
-      }],
-      countries: [{
-        id: 1,
-        name:'Myanmar'
-      }],
-      cuisines: [{
-        id: 1,
-        name:'hot pot'
-      }],
-      image: Restaurant1,
-      otherPhoto: [
-        Restaurant1,
-        Restaurant1, 
-      ],
-      map: 'https://goo.gl/maps/xyz123',
-      address: '123 Yangon Street, Myanmar',
-      socialLinks: [
-        {
-          name: 'Facebook',
-          url: 'https://facebook.com/goldenMyanmar',
-        },
-        {
-          name: 'Instagram',
-          url: 'https://instagram.com/goldenMyanmar',
-        }
-      ],
-      rank: 4,
-      createdAt: '2024-01-15',
-      updatedAt: '2024-01-15'
-    }
-  ]);
-
-  // Add this state near other useState declarations
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1
+  })
+
+  //Fetch restaurants function
+  const fetchRestaurants = async () => {
+    try {
+      setLoading(true);
+      const response = await getRestaurantLists(pageInfo.currentPage, pageInfo.limit);
+      console.log("response",response)
+
+      if(response && response.data) {
+        // Map the response data to include the image URL
+        const formattedData = response.data.map(restaurant => ({
+          ...restaurant,
+          img: `${import.meta.env.VITE_API_BASE_URL}/${restaurant.img}`,
+          otherPhoto: restaurant.otherPhoto.map(photo => `${import.meta.env.VITE_API_BASE_URL}/${photo}`),
+          createdAt: new Date(restaurant.createdAt).toLocaleDateString(),
+          updatedAt: new Date(restaurant.updatedAt).toLocaleDateString()
+        }));
+
+        setRestaurants(formattedData);
+
+        // Update pagination info
+        setPageInfo(prev => ({
+          ...prev,
+          total: response.total || formattedData.length,
+          totalPages: Math.ceil((response.total || formattedData.length) / prev.limit)
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching restaurants:', error);
+      setMessage({
+        text: error.response?.message || 'Failed to fetch restaurants',
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Add this function before the return statement
   const StarRating = ({ value, onChange, readOnly }) => {
@@ -98,10 +95,11 @@ const Restaurants = () => {
   };
 
   const handleModal = (mode, restaurant = null) => {
+    console.log("restaurant bbbbbbb", mode, restaurant)
     setModalMode(mode);
     setSelectedRestaurant(restaurant);
-    setSocialLinksCount(restaurant ? restaurant.socialLinks.length : 1);
-    setRating(restaurant ? restaurant.rank : 0);
+    setSocialLinksCount(restaurant?.socialLink?.length || 1);
+    setRating(restaurant?.rank || 0);
     setIsModalOpen(true);
   };
 
@@ -128,6 +126,15 @@ const Restaurants = () => {
     }
   };
 
+  const handleLimitChange = (newLimit) => {
+    setPageInfo( prev => ({
+      ...prev,
+      limit: newLimit,
+      currentPage: 1,
+      totalPages: Math.ceil(prev.total / newLimit)
+    }));
+  };
+
   const handleAdditionalImageChange = (e, index) => {
     const file = e.target.files[0];
     if (file) {
@@ -144,6 +151,15 @@ const Restaurants = () => {
     }
   };
 
+  useEffect(() => {
+    fetchRestaurants();
+  }, []);
+
+  useEffect(() => {
+    fetchRestaurants();
+  }, [pageInfo.limit, pageInfo.currentPage] );
+
+
   const columns = useMemo(
     () => [
       {
@@ -152,10 +168,10 @@ const Restaurants = () => {
       },
       {
         header: 'Image',
-        accessorKey: 'image',
+        accessorKey: 'img',
         cell: ({ row }) => (
           <img 
-            src={row.original.image} 
+            src={row.original.img} 
             alt={row.original.name} 
             className="h-16 w-24 object-cover rounded-lg"
           />
@@ -227,7 +243,25 @@ const Restaurants = () => {
     state: {
       sorting,
       globalFilter,
+      pagination: {
+        pageIndex: pageInfo.currentPage - 1,
+        pageSize: pageInfo.limit
+      }
     },
+
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const nextState = updater({
+          pageIndex: pageInfo.currentPage -1,
+          pageSize: pageInfo.limit
+        });
+        handlePageChange(nextState.pageIndex + 1);
+      } else {
+        handlePageChange(updater.pageIndex + 1);
+      }
+    },
+    manualPagination: true,
+    pageCount: pageInfo.totalPages,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
@@ -325,8 +359,8 @@ const Restaurants = () => {
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center gap-2">
               <select
-                value={table.getState().pagination.pageSize}
-                onChange={e => table.setPageSize(Number(e.target.value))}
+                value={pageInfo.limit}
+                onChange={e => handleLimitChange(Number(e.target.value))}
                 className="px-2 py-1 border rounded-lg"
               >
                 {[10, 20, 30, 40, 50].map(pageSize => (
@@ -336,69 +370,86 @@ const Restaurants = () => {
                 ))}
               </select>
               <span className="text-gray-600">
-                Page {table.getState().pagination.pageIndex + 1} of{' '}
-                {table.getPageCount()}
+                Page {pageInfo.currentPage} of{pageInfo.totalPages}
               </span>
             </div>
             <div className="flex gap-1">
               <button
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => handlePageChange(pageInfo.currentPage - 1)}
+                disabled={pageInfo.currentPage === 1}
                 className="px-3 py-1 border rounded-lg disabled:opacity-50"
               >
                 Previous
               </button>
               
               {/* Numbered Pagination with Ellipsis */}
-              {(() => {
-                const currentPage = table.getState().pagination.pageIndex + 1;
-                const totalPages = table.getPageCount();
-                const pageNumbers = [];
-                
-                if (totalPages <= 7) {
-                  for (let i = 1; i <= totalPages; i++) {
-                    pageNumbers.push(i);
-                  }
-                } else {
-                  pageNumbers.push(1);
-                  
-                  if (currentPage > 3) {
-                    pageNumbers.push('...');
-                  }
-                  
-                  for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-                    pageNumbers.push(i);
-                  }
-                  
-                  if (currentPage < totalPages - 2) {
-                    pageNumbers.push('...');
-                  }
-                  
-                  pageNumbers.push(totalPages);
-                }
-                
-                return pageNumbers.map((pageNumber, index) => (
-                  pageNumber === '...' ? (
-                    <span key={`ellipsis-${index}`} className="px-3 py-1">...</span>
-                  ) : (
-                    <button
-                      key={pageNumber}
-                      onClick={() => table.setPageIndex(pageNumber - 1)}
-                      className={`px-3 py-1 border rounded-lg ${
-                        currentPage === pageNumber
-                          ? 'bg-[#f99109] text-white'
-                          : 'hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNumber}
-                    </button>
-                  )
-                ));
-              })()}
+          {(() => {
+            // Calculate totalPages based on total items and limit
+            const totalItems = pageInfo.total ?? 0;
+            const itemsPerPage = pageInfo.limit ?? 1;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const currentPage = pageInfo.currentPage ?? 1;
+            const pageNumbers = [];
+
+            if (totalPages === 0) return null; // Nothing to render
+
+            console.log("totalItems", totalItems);
+            console.log("itemsPerPage", itemsPerPage);
+            console.log("totalPages", totalPages);
+            console.log("currentPage", currentPage);
+            console.log("pageNumbers", pageNumbers);
+            
+            if (totalPages <= 7) {
+              // Show all pages if total pages are 7 or less
+              for (let i = 1; i <= totalPages; i++) {
+                pageNumbers.push(i);
+              }
+            } else {
+              // Rest of the pagination logic remains the same
+              // Always show first page
+              pageNumbers.push(1);
+              
+              if (currentPage > 3) {
+                pageNumbers.push('...');
+              }
+              
+              // Show pages around current page
+              for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pageNumbers.push(i);
+              }
+              
+              if (currentPage < totalPages - 2) {
+                pageNumbers.push('...');
+              }
+              
+              // Always show last page if there's more than one page
+              if (totalPages > 1) {
+                pageNumbers.push(totalPages);
+              }
+            }
+            
+            return pageNumbers.map((pageNumber, index) => (
+              pageNumber === '...' ? (
+                <span key={`ellipsis-${index}`} className="px-3 py-1">...</span>
+              ) : (
+                <button
+                  key={pageNumber}
+                  onClick={() => handlePageChange(pageNumber)}
+                  className={`px-3 py-1 border rounded-lg ${
+                    currentPage === pageNumber
+                      ? 'bg-[#f99109] text-white'
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              )
+            ));
+          })()}
 
               <button
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
+                onClick={() => handlePageChange(pageInfo.currentPage + 1)}
+                disabled={pageInfo.currentPage === Math.ceil(pageInfo.total / pageInfo.limit)}
                 className="px-3 py-1 border rounded-lg disabled:opacity-50"
               >
                 Next

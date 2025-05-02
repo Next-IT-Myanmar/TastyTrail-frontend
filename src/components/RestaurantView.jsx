@@ -1,7 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import { FaStar } from 'react-icons/fa';
+import { getRestaurantDetail } from '../services/restaurantService';
 
 const RestaurantViewModal = ({ restaurant, onClose }) => {
+
+  const [restaurantDetail, setRestaurantDatail] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRestaurantDetail = async () => {
+    try {
+      setLoading(true);
+      // Ensure the ID is properly passed as a number or string
+      const id = restaurant?.id;
+      if (!id) return;
+
+      const response = await getRestaurantDetail(id);
+
+      if(response) {
+        setRestaurantDatail({
+          ...response.data,
+          img: `${import.meta.env.VITE_API_BASE_URL}/${response.img}`,
+          otherPhoto: response.otherPhoto?.map(photo => 
+            `${import.meta.env.VITE_API_BASE_URL}/${photo}`
+          ) || []
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching restaurant detail:', error);
+      setRestaurantDatail(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (restaurant?.id) {
+      fetchRestaurantDetail();
+    }
+  }, [restaurant?.id]);
+
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-6">
@@ -149,20 +186,20 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Restaurant Image</label>
-            {restaurant?.image && (
+            {restaurantDetail?.img && (
               <img
-                src={restaurant.image}
+                src={restaurantDetail.img}
                 alt="Restaurant"
                 className="mt-2 h-32 w-48 object-cover rounded-lg"
               />
             )}
           </div>
 
-          {/* Add Additional Images section */}
+          {/* Additional Images section */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Additional Images</label>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-2">
-              {restaurant?.otherPhoto?.map((photo, index) => (
+              {restaurantDetail?.otherPhoto?.map((photo, index) => (
                 <img
                   key={index}
                   src={photo}
@@ -175,9 +212,9 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Social Links</label>
-            {restaurant?.socialLinks?.map((link, index) => (
+            {restaurant?.socialLink?.map((link, index) => (
               <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-                <div className="p-2 bg-gray-50 rounded-md">{link.name}</div>
+                <div className="p-2 bg-gray-50 rounded-md">{link.platform}</div>
                 <div className="p-2 bg-gray-50 rounded-md">
                   <a href={link.url} target="_blank" rel="noopener noreferrer" 
                      className="text-blue-500 hover:text-blue-600">{link.url}</a>

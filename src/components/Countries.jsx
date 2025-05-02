@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
-import { createCountry, getCountries, updateCountry, getCountryDetail, deleteCountry } from '../services/countryService';
+import { createCountry, getCountries, updateCountry, getCountryDetail } from '../services/countryService';
 import MyanmarFlag from '../assets/images/MyanmarFlag.jpg';
 import ThailandFlag from '../assets/images/ThaiFlag.jpg';
 import VietnamFlag from '../assets/images/VietnamFlag.jpg';
@@ -150,6 +150,18 @@ const Countries = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setFormData(prev => ({ ...prev, flag: file }));
+    }
+  };
+
   const handleModal = async (mode, country = null) => {
     setModalMode(mode);
     
@@ -158,12 +170,11 @@ const Countries = () => {
         setLoading(true);
         const response = await getCountryDetail(country.id);
         if (response && response.data) {
-          const flagUrl = `${import.meta.env.VITE_API_BASE_URL}/${response.data.flag}`;
           setSelectedCountry({
             ...response.data,
-            flag: flagUrl
+            flag: `${import.meta.env.VITE_API_BASE_URL}/${response.data.flag}`
           });
-          setPreviewImage(flagUrl);
+          // Set form data for viewing
           setFormData({
             name: response.data.name,
             description: response.data.description,
@@ -182,15 +193,13 @@ const Countries = () => {
     } else {
       setSelectedCountry(country);
       if (country) {
-        const flagUrl = `${import.meta.env.VITE_API_BASE_URL}/${country.flag}`;
-        setPreviewImage(flagUrl);
         setFormData({
           name: country.name,
           description: country.description,
           flag: country.flag
         });
       } else {
-        setPreviewImage(null);
+        // Reset form for create mode
         setFormData({
           name: '',
           description: '',
@@ -201,48 +210,16 @@ const Countries = () => {
     
     setIsModalOpen(true);
   };
-  
-    const handleImageChange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviewImage(reader.result);
-        };
-        reader.readAsDataURL(file);
-        setFormData(prev => ({ ...prev, flag: file }));
-      }
-    };
 
   const handleDelete = (id) => {
     setCountryToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = async () => {
-    try {
-      await deleteCountry(countryToDelete);
-      
-      setMessage({
-        text: 'Country deleted successfully',
-        type: 'success'
-      });
-      
-      // Refresh the countries list
-      fetchCountries();
-      
-      setIsDeleteModalOpen(false);
-      setCountryToDelete(null);
-      
-    } catch (error) {
-      console.error('Error deleting country:', error);
-      setMessage({
-        text: error.response?.data?.message || 'Failed to delete country',
-        type: 'error'
-      });
-    } finally {
-      setLoading(false);
-    }
+  const confirmDelete = () => {
+    setCountries(countries.filter(country => country.id !== countryToDelete));
+    setIsDeleteModalOpen(false);
+    setCountryToDelete(null);
   };
 
   const columns = useMemo(
@@ -346,17 +323,6 @@ const Countries = () => {
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
     });
-
-  // Add useEffect for auto-dismissing notifications
-  useEffect(() => {
-    if (message.text) {
-      const timer = setTimeout(() => {
-        setMessage({ text: '', type: '' });
-      }, 3000); // 3 seconds
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
 
   // Add useEffect to refetch when pagination changes
   useEffect(() => {
