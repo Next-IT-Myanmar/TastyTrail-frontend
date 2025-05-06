@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaStar, FaTimes, FaChevronDown } from 'react-icons/fa';
-import { createRestaurant } from '../services/restaurantService';
+import { createRestaurant , getRestaurantLists } from '../services/restaurantService';
 import { getCategories } from '../services/categoryService';
 import { getCountries } from '../services/countryService';
 import { getCuisines } from '../services/cuisineService';
@@ -21,6 +21,7 @@ const RestaurantCreateModal = ({ onClose }) => {
   const [isOpenCountries, setOpenCountries] = useState(false);
   const [categorySearchTerm, setCategorySearchTerm] = useState('');
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
+  const [phoneNumbers, setPhoneNumbers] = useState(['']);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [operatingDays, setOperatingDays] = useState([]);
@@ -43,30 +44,6 @@ const RestaurantCreateModal = ({ onClose }) => {
     countries: false,
     cuisines: false
   });
-
-  // const optionsCategories = [
-  //   { id: 1, name: 'Option 1' },
-  //   { id: 2, name: 'Option 2' },
-  //   { id: 3, name: 'Option 3' },
-  //   { id: 4, name: 'Another Option' },
-  //   { id: 5, name: 'Something Else' },
-  //   { id: 6, name: 'Last Option' },
-  // ];
-  
-  // const optionCuisines = [
-  //   { id: 1, name: 'Mala Xiang Guo' },
-  //   { id: 2, name: 'Noodle Soup' },
-  //   { id: 3, name: 'Hot Pot' },
-  //   { id: 4, name: 'Dim Sum' },
-  //   { id: 5, name: 'Sushi' },
-  //   { id: 6, name: 'BBQ' },
-  // ];
-
-  // const optionCountries = [
-  //   { id: 1, name: 'Option 1' },
-  //   { id: 2, name: 'Option 2' },
-  //   { id: 3, name: 'Option 3' }, 
-  // ];
 
   const [formData, setFormData] = useState({
     name: '',
@@ -96,13 +73,15 @@ const RestaurantCreateModal = ({ onClose }) => {
     setSelectedCuisines(selectedCuisines.filter(item => item.id !== optionToRemove.id));
   };
 
-  // const handleDayChange = (day) => {
-  //   setOperatingDays(prev => 
-  //     prev.includes(day) 
-  //       ? prev.filter(d => d !== day)
-  //       : [...prev, day]
-  //   );
-  // };
+  const handleAddPhoneNumber = () => {
+    setPhoneNumbers([...phoneNumbers, '']);
+  };
+
+  const handlePhoneNumberChange = (index, value) => {
+    const newPhoneNumbers = [...phoneNumbers];
+    newPhoneNumbers[index] = value;
+    setPhoneNumbers(newPhoneNumbers);
+  };
 
   const handleDeleteImage = (index) => {
     // Remove image preview
@@ -334,13 +313,13 @@ const RestaurantCreateModal = ({ onClose }) => {
       const updatedFormData = {
         name: e.target.name.value,
         description: e.target.description.value,
-        phoneNumber: e.target.phoneNumber.value,
+        phones: phoneNumbers.filter(phone => phone.trim() !== ''), // Changed from phoneNumber
         address: e.target.address.value,
         map: e.target.map.value,
         openHour: e.target.openHour.value,
         closeHour: e.target.closeHour.value,
         rank: rating,
-        priceRate: priceRate,
+        priceRange: priceRate,
         isPromotion: e.target.promotion?.value > 0,
         promoRate: e.target.promotion?.value || 0,
         categoryIds: selectedCategories.map(cat => cat.id).join(','),
@@ -389,10 +368,15 @@ const RestaurantCreateModal = ({ onClose }) => {
 
       // Call the API
       const response = await createRestaurant(formDataToSend);
-      console.log('Restaurant created successfully:', response);
-      
-      onClose();
-      
+      if (response) {
+        // Fetch updated restaurant list
+        const updatedList = await getRestaurantLists();
+        if (updatedList) {
+          onClose(updatedList);
+        } else {
+          onClose();
+        }
+      }  
     } catch (error) {
       console.error('Error creating restaurant:', error);
     }
@@ -442,33 +426,34 @@ const RestaurantCreateModal = ({ onClose }) => {
             />
           </div>
 
+          {/*  Update the phone number section in the form */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number
-              <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              pattern="[0-9\-]{1,20}"
-              maxLength={20}
-              onKeyDown={(e) => {
-                // Allow: backspace, delete, tab, escape, enter
-                if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'].includes(e.key)) {
-                  return;
-                }
-                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
-                  return;
-                }
-                // Allow: numbers
-                if (!/[0-9-]/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-              required
-              placeholder="Enter phone number (numbers only)"
-            />
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">Phone Number
+                <span className="text-red-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleAddPhoneNumber}
+                className="text-sm text-[#f99109] hover:text-yellow-600"
+              >
+                + Add More
+              </button>
+            </div>
+            {phoneNumbers.map((phone, index) => (
+              <input
+                key={index}
+                type="tel"
+                name={`phoneNumber${index}`}
+                value={phone}
+                onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
+                pattern="[0-9\-]{1,20}"
+                maxLength={20}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2 mb-2"
+                required={index === 0}
+                placeholder="Enter phone number (numbers only)"
+              />
+            ))}
           </div>
           {/* Operating Days */}
           {/* <div>

@@ -14,10 +14,15 @@
 
 
 import { createRoot } from "react-dom/client";
+import ReactDOM from 'react-dom/client';
+import { store } from './redux/store';
 import { RouterProvider } from "react-router";
+import { Provider } from 'react-redux';
 import router from "./routers/index";
 
-createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
 );
 // Compare this snippet from index.jsx:

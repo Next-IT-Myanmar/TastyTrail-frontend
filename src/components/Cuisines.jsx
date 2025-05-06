@@ -242,7 +242,7 @@ const Cuisines = () => {
         accessorKey: 'image',
         cell: ({ row }) => (
           <img
-            src={row.original.image}
+            src={`${import.meta.env.VITE_API_BASE_URL}/${row.original.image}`}
             alt={row.original.name}
             className="h-16 w-16 object-cover rounded-lg"
           />

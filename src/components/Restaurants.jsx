@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaStar, FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
-import { getRestaurantLists } from '../services/restaurantService';
+import { getRestaurantLists, deleteRestaurant } from '../services/restaurantService';
 import {
   useReactTable,
   getCoreRowModel,
@@ -16,6 +17,7 @@ import RestaurantUpdate from './RestaurantUpdate';
 
 const Restaurants = () => {
   const [loading, setLoading] = useState(false);
+  const message = useSelector((state) => state.message);
   const [restaurants, setRestaurants] = useState([]);
   const [sorting, setSorting] = useState([])
   const [globalFilter, setGlobalFilter] = useState('');
@@ -95,23 +97,55 @@ const Restaurants = () => {
   };
 
   const handleModal = (mode, restaurant = null) => {
-    console.log("restaurant bbbbbbb", mode, restaurant)
     setModalMode(mode);
-    setSelectedRestaurant(restaurant);
-    setSocialLinksCount(restaurant?.socialLink?.length || 1);
+    
+    if (mode === 'edit' || mode === 'view') {
+      // Handle social links parsing
+      let socialLinksArray = [];
+      if (restaurant?.socialLink) {
+        try {
+          // Handle if socialLink is already an array or needs parsing
+          socialLinksArray = Array.isArray(restaurant.socialLink) 
+            ? restaurant.socialLink 
+            : JSON.parse(restaurant.socialLink);
+        } catch (error) {
+          console.error('Error parsing social links:', error);
+          socialLinksArray = [];
+        }
+      }
+
+      const formattedRestaurant = {
+        ...restaurant,
+        socialLinks: socialLinksArray,
+        otherPhoto: restaurant?.otherPhoto || []
+      };
+      setSelectedRestaurant(formattedRestaurant);
+      setSocialLinksCount(socialLinksArray.length || 1);
+      setAdditionalImagesCount(formattedRestaurant.otherPhoto.length || 1);
+    } else {
+      setSelectedRestaurant(null);
+      setSocialLinksCount(1);
+      setAdditionalImagesCount(1);
+    }
+    
     setRating(restaurant?.rank || 0);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     setRestaurantToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setRestaurants(restaurants.filter(restaurant => restaurant.id !== restaurantToDelete));
-    setIsDeleteModalOpen(false);
-    setRestaurantToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      await deleteRestaurant(restaurantToDelete);
+      await fetchRestaurants(); // Refresh the list after successful deletion
+      setIsDeleteModalOpen(false);
+      setRestaurantToDelete(null);
+    } catch (error) {
+      console.error('Error deleting restaurant:', error);
+    }
   };
 
   const handleDeleteAdditionalImage = (index) => {
@@ -135,6 +169,13 @@ const Restaurants = () => {
     }));
   };
 
+  const handlePageChange = (page) => {
+    setPageInfo(prev => ({
+      ...prev,
+      currentPage: page
+    }));
+  };
+
   const handleAdditionalImageChange = (e, index) => {
     const file = e.target.files[0];
     if (file) {
@@ -149,6 +190,21 @@ const Restaurants = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCreateModalClose = async () => {
+    // Fetch the updated list after creation
+    await fetchRestaurants();
+    setIsModalOpen(false);
+    setModalMode('');
+  };
+
+  const handleUpdateModalClose = async () => {
+    // Fetch the updated list after update
+    await fetchRestaurants();
+    setSelectedRestaurant(null);
+    setIsModalOpen(false);
+    setModalMode('');
   };
 
   useEffect(() => {
@@ -272,28 +328,26 @@ const Restaurants = () => {
 
   return (
     <div className="p-6">
+      {message && (
+        <div className={`p-4 mb-4 ${
+          message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+        } rounded-lg`}>
+          {message.text}
+        </div>
+      )}
       {modalMode === 'view' && isModalOpen ? (
         <RestaurantView
           restaurant={selectedRestaurant} 
-          onClose={() => {
-            setIsModalOpen(false);
-            setModalMode('');
-          }}
+          onClose={handleUpdateModalClose}
         />
       ) : modalMode === 'create' && isModalOpen ? (
         <RestaurantCreate
-          onClose={() => {
-            setIsModalOpen(false);
-            setModalMode('');
-          }}
+          onClose={handleCreateModalClose}
         />
       ) : modalMode === 'edit' && isModalOpen ? (
         <RestaurantUpdate
           restaurant={selectedRestaurant}
-          onClose={() => {
-            setIsModalOpen(false);
-            setModalMode('');
-          }}
+          onClose={handleUpdateModalClose}
         />
       ) : (
         <>
@@ -625,31 +679,38 @@ const Restaurants = () => {
                         </button>
                       )}
                     </div>
-                    {Array.from({ length: socialLinksCount }).map((_, index) => (
-                      <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-                        <input
-                          type="text"
-                          placeholder="Platform Name"
-                          className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
-                          defaultValue={selectedRestaurant?.socialLinks[index]?.name}
-                          readOnly={modalMode === 'view'}
-                        />
-                        <input
-                          type="url"
-                          placeholder="URL"
-                          className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
-                          defaultValue={selectedRestaurant?.socialLinks[index]?.url}
-                          readOnly={modalMode === 'view'}
-                        />
-                        <input
-                          type="url"
-                          placeholder="Icon URL"
-                          className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
-                          defaultValue={selectedRestaurant?.socialLinks[index]?.image}
-                          readOnly={modalMode === 'view'}
-                        />
+                    {modalMode === 'view' ? (
+                      // View mode - display social links as read-only
+                      <div className="space-y-2">
+                        {selectedRestaurant?.socialLinks?.map((link, index) => (
+                          <div key={index} className="flex items-center gap-4">
+                            <span className="font-medium">{link.platform}:</span>
+                            <a href={link.url} target="_blank" rel="noopener noreferrer" 
+                               className="text-blue-600 hover:underline">
+                              {link.url}
+                            </a>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    ) : (
+                      // Edit/Create mode
+                      Array.from({ length: socialLinksCount }).map((_, index) => (
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+                          <input
+                            type="text"
+                            placeholder="Platform Name"
+                            className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
+                            defaultValue={selectedRestaurant?.socialLinks?.[index]?.platform}
+                          />
+                          <input
+                            type="url"
+                            placeholder="URL"
+                            className="rounded-md border-gray-300 shadow-sm focus:border-[#f99109] focus:ring-[#f99109]"
+                            defaultValue={selectedRestaurant?.socialLinks?.[index]?.url}
+                          />
+                        </div>
+                      ))
+                    )}
                   </div>
 
                   <div className="flex justify-end gap-2 mt-4">

@@ -10,7 +10,6 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
   const fetchRestaurantDetail = async () => {
     try {
       setLoading(true);
-      // Ensure the ID is properly passed as a number or string
       const id = restaurant?.id;
       if (!id) return;
 
@@ -19,10 +18,15 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
       if(response) {
         setRestaurantDatail({
           ...response.data,
-          img: `${import.meta.env.VITE_API_BASE_URL}/${response.img}`,
-          otherPhoto: response.otherPhoto?.map(photo => 
+          img: response.data.img ? `${import.meta.env.VITE_API_BASE_URL}/${response.data.img}` : '',
+          otherPhoto: response.data.otherPhoto?.map(photo => 
             `${import.meta.env.VITE_API_BASE_URL}/${photo}`
-          ) || []
+          ) || [],
+          phones: response.data.phones || [],
+          socialLinks: response.data.socialLink ? Object.entries(response.data.socialLink).map(([platform, url]) => ({
+            platform,
+            url
+          })) : []
         });
       }
     } catch (error) {
@@ -37,7 +41,7 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
     if (restaurant?.id) {
       fetchRestaurantDetail();
     }
-  }, [restaurant?.id]);
+  }, [restaurant]); // Add restaurant as dependency
 
   return (
     <div className="w-full">
@@ -86,7 +90,13 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-            <div className="mt-1 p-2 bg-gray-50 rounded-md">{restaurant?.phoneNumber}</div>
+            <div className="mt-1 space-y-2">
+              {restaurant?.phones?.map((phone, index) => (
+                <div key={index} className="p-2 bg-gray-50 rounded-md">
+                  {phone}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,7 +126,7 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700">Promotion</label>
               <div className="mt-1 p-2 bg-gray-50 rounded-md">
-                {restaurant?.promotion ? `${restaurant.promotion}%` : 'No promotion'}
+                {restaurant?.promoRate ? `${restaurant.promoRate}%` : 'No promotion'}
               </div>
             </div>
             <div>
@@ -186,9 +196,9 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Restaurant Image</label>
-            {restaurantDetail?.img && (
+            {restaurant?.img && (
               <img
-                src={restaurantDetail.img}
+                src={restaurant.img}
                 alt="Restaurant"
                 className="mt-2 h-32 w-48 object-cover rounded-lg"
               />
@@ -199,7 +209,7 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700">Additional Images</label>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-2">
-              {restaurantDetail?.otherPhoto?.map((photo, index) => (
+              {restaurant?.otherPhoto?.map((photo, index) => (
                 <img
                   key={index}
                   src={photo}
@@ -210,17 +220,26 @@ const RestaurantViewModal = ({ restaurant, onClose }) => {
             </div>
           </div>
 
+          {/* Social Links section */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Social Links</label>
-            {restaurant?.socialLink?.map((link, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-                <div className="p-2 bg-gray-50 rounded-md">{link.platform}</div>
-                <div className="p-2 bg-gray-50 rounded-md">
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" 
-                     className="text-blue-500 hover:text-blue-600">{link.url}</a>
+            <div className="space-y-2">
+              {restaurant?.socialLinks?.map((link, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+                  <div className="p-2 bg-gray-50 rounded-md capitalize">{link.platform}</div>
+                  <div className="p-2 bg-gray-50 rounded-md col-span-2">
+                    <a 
+                      href={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-blue-500 hover:text-blue-600"
+                    >
+                      {link.url}
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
