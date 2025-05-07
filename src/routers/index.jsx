@@ -1,12 +1,12 @@
 import React from 'react';
 import { createBrowserRouter } from "react-router-dom";
 import App from '../App';
-import Login from '../pages/login';
+import Login from '../pages/Login';
 import HomeLayout from '../layouts/HomeLayout';
 import LoginLayout from '../layouts/LoginLayout';
 import AdminLayout from '../layouts/AdminLayout';
 import SignUp from '../pages/SignUp';
-import Dashboard from '../components/dashboard';
+import Dashboard from '../components/Dashboard';
 import Countries from '../components/Countries';
 import Categories from '../components/Categories';
 import Restaurants from '../components/Restaurants';

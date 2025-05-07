@@ -231,6 +231,13 @@ const Sliders = () => {
       {
         header: 'Description',
         accessorKey: 'description',
+        cell: ({ row }) => (
+          <span title={row.original.description}>
+            {row.original.description.length > 40 
+              ? `${row.original.description.substring(0, 40)}...` 
+              : row.original.description}
+          </span>
+        ),
       },
       {
         header: 'Actions',

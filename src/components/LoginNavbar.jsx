@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/images/origin_logo.png";
 import '../index.css'
-import Login from "../pages/login";
 
 const LoginHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
