@@ -10,7 +10,7 @@ import {
   getFilteredRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import RestaurantView from './restaurantview';
+import RestaurantView from './RestaurantView';
 import RestaurantCreate from './RestaurantCreate';
 import RestaurantUpdate from './RestaurantUpdate';
 
