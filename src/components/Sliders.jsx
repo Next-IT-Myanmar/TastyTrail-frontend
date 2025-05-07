@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
-import SliderImage from '../assets/images/slider1.jpg';
 import { useDispatch } from 'react-redux';
 import { createSlider, getSliderLists, getSliderDetail, deleteSlider} from '../services/sliderService'
 import { sendMessage } from '../redux/slices/messageSlice';

@@ -1,7 +1,7 @@
 import React from "react";
 import featuresApp from "../assets/images/features_app.png";
 import bgImage from "../assets/images/feature_bg.jpg";
-import { FaCoffee, FaHamburger, FaUtensils, FaShoppingBag, FaUserPlus, FaGlobe, FaRoute } from 'react-icons/fa';
+import { FaCoffee, FaHamburger, FaUtensils, FaShoppingBag } from 'react-icons/fa';
 import '../index.css'
 
 const Feature = () => {

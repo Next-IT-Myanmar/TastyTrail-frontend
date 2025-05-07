@@ -1,13 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
 import { createCountry, getCountries, updateCountry, getCountryDetail, deleteCountry } from '../services/countryService';
-import MyanmarFlag from '../assets/images/MyanmarFlag.jpg';
-import ThailandFlag from '../assets/images/ThaiFlag.jpg';
-import VietnamFlag from '../assets/images/VietnamFlag.jpg';
-import CambodiaFlag from '../assets/images/CambodiaFlag.jpg';
-import LaosFlag from '../assets/images/LaosFlag.jpg';
-import KoreanFlag from '../assets/images/KoreanFlag.jpg';
-import JapanFlag from '../assets/images/JapanFlag.jpg';
 import {
   useReactTable,
   getCoreRowModel,

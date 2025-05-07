@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
-// import { createNotification, getNotificationLists, deleteNotification } from '../services/notificationService';
 import { useDispatch } from 'react-redux';
 import { sendMessage } from '../redux/slices/messageSlice';
 import {
