@@ -1,10 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
 import { createCuisine, getCuisines, getCuisineDetail, updateCuisine, deleteCuisine } from '../services/cuisineService';
-import categoryImage from '../assets/images/bibimbap.png';
-import ramen from '../assets/images/ramen.png';
-import dish from '../assets/images/dish.png';
-import biryani from '../assets/images/biryani.png';
 import {
   useReactTable,
   getCoreRowModel,

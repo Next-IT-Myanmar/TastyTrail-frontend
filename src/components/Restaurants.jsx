@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaStar, FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaStar } from 'react-icons/fa';
 import { getRestaurantLists, deleteRestaurant } from '../services/restaurantService';
 import {
   useReactTable,
@@ -10,7 +10,6 @@ import {
   getFilteredRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import Restaurant1 from '../assets/images/restaurants/restaurant1.jpg';
 import RestaurantView from './restaurantview';
 import RestaurantCreate from './RestaurantCreate';
 import RestaurantUpdate from './RestaurantUpdate';
