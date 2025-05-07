@@ -1,5 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import React, { useState, useMemo, useEffect } from 'react';
+import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaTimes, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { createCurrency, getCurrencyLists, updateCurrency, deleteCurrency } from '../services/currencyService';
+import { useDispatch } from 'react-redux';
+import { sendMessage } from '../redux/slices/messageSlice';
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,21 +20,88 @@ const Currencies = () => {
   const [modalMode, setModalMode] = useState('create');
   const [selectedCurrency, setSelectedCurrency] = useState(null);
   const [currencyToDelete, setCurrencyToDelete] = useState(null);
+  const dispatch = useDispatch();
+  const [previewImage, setPreviewImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1
+  });
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    code: '',
+    country: '',
+    buy: 0,
+    sell: 0,
+    buyStatus: true,
+    sellStatus: true,
+    img: null
+  });
+  const [currencies, setCurrencies] = useState([]);
 
-  const [currencies, setCurrencies] = useState([
-    {
-      id: 1,
-      code: 'USD',
-      country: 'United States',
-      name: 'Dollar',
-      buy: 3350,
-      buyStatus: true,
-      sell: 3380,
-      sellStatus: false,
-      createdAt: '2024-01-15',
-      updatedAt: '2024-01-15'
+  // Add this function to fetch currencies
+  const fetchCurrencies = async () => {
+    try {
+      setLoading(true);
+      const response = await getCurrencyLists(pageInfo.currentPage, pageInfo.limit);
+
+      if (response && response.data) {
+        const sortedData = [...response.data].sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setCurrencies(sortedData);
+      
+        // Safely check for data and pagination
+        setPageInfo(prev => ({
+          ...prev,
+          total: response.pagination.total,
+          currentPage: response.pagination.page,
+          limit: response.pagination.limit,
+          totalPages: Math.ceil(response.pagination.total / response.pagination.limit)
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      dispatch(sendMessage({ 
+        type: 'error', 
+        text: error?.response?.data?.message || 'Failed to fetch currencies' 
+      }));
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  // Add pagination handlers
+  const handlePageChange = (newPage) => {
+    const totalPages = Math.ceil(pageInfo.total / pageInfo.limit);
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPageInfo(prev => ({ ...prev, currentPage: newPage }));
+    }
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setPageInfo(prev => ({
+      ...prev,
+      limit: newLimit,
+      currentPage: 1,
+      totalPages: Math.ceil(prev.total / newLimit)
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setFormData(prev => ({ ...prev, img: file }));
+    }
+  };
 
   const handleModal = (mode, currency = null) => {
     setModalMode(mode);
@@ -44,11 +114,91 @@ const Currencies = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setCurrencies(currencies.filter(currency => currency.id !== currencyToDelete));
-    setIsDeleteModalOpen(false);
-    setCurrencyToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      const response = await deleteCurrency(currencyToDelete);
+      if (response) {
+        dispatch(sendMessage({ type: 'success', text: 'Currency deleted successfully!' }));
+        fetchCurrencies(); // Refresh the list after deletion
+      }
+    } catch (error) {
+      console.error('Error deleting currency:', error);
+      dispatch(sendMessage({ 
+        type: 'error', 
+        text: error?.response?.data?.message || 'Failed to delete currency' 
+      }));
+    } finally {
+      setIsDeleteModalOpen(false);
+      setCurrencyToDelete(null);
+    }
   };
+
+  // Update the form submission handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const formData = new FormData();
+      formData.append('code', e.target.elements.code.value);
+      formData.append('buy', e.target.elements.buy.value);
+      formData.append('buyStatus', e.target.elements.buyStatus.value);
+      formData.append('sell', e.target.elements.sell.value);
+      formData.append('sellStatus', e.target.elements.sellStatus.value);
+      
+      if (e.target.elements.img.files[0]) {
+        formData.append('img', e.target.elements.img.files[0]);
+      }
+
+      let response;
+      if (modalMode === 'create') {
+        response = await createCurrency(formData);
+      } else if (modalMode === 'edit') {
+        formData.append('id', selectedCurrency.id);
+        response = await updateCurrency(selectedCurrency.id,formData);
+      }
+      
+      if (response) {
+        // Close the modal first
+        setIsModalOpen(false);
+        // Reset form data
+        setFormData({
+          description: '',
+          code: '',
+          buy: 0,
+          sell: 0,
+          buyStatus: true,
+          sellStatus: true,
+          img: null
+        });
+        setPreviewImage(null);
+        
+        // Show success message
+        dispatch(sendMessage({ 
+          type: 'success', 
+          text: `Currency ${modalMode === 'create' ? 'created' : 'updated'} successfully!` 
+        }));
+        
+        // Refresh the currency list
+        fetchCurrencies();
+      }
+    } catch (error) {
+      console.error('Error handling currency:', error);
+      dispatch(sendMessage({ 
+        type: 'error', 
+        text: error?.response?.data?.message || `Failed to ${modalMode} currency` 
+      }));
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrencies();
+  }, [pageInfo.currentPage, pageInfo.limit]);
+
+  useEffect(() => {
+    fetchCurrencies();
+  }, []);
+
+
 
   const columns = useMemo(
     () => [
@@ -57,16 +207,22 @@ const Currencies = () => {
         accessorKey: 'id',
       },
       {
+        header: 'Image',
+        accessorKey: 'img',
+        cell: ({ row }) => (
+          <img 
+            src={`${import.meta.env.VITE_API_BASE_URL}/${row.original.img}`}
+            alt={row.original.code}
+            className="h-8 w-8 object-cover rounded-full"
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/32'; // Fallback image
+            }}
+          />
+        ),
+      },
+      {
         header: 'Code',
         accessorKey: 'code',
-      },
-      {
-        header: 'Country',
-        accessorKey: 'country',
-      },
-      {
-        header: 'Currency',
-        accessorKey: 'name',
       },
       {
         header: 'Buy',
@@ -139,8 +295,25 @@ const Currencies = () => {
     state: {
       sorting,
       globalFilter,
+      pagination: {
+        pageIndex: pageInfo.currentPage - 1,
+        pageSize: pageInfo.limit,
+      },
     },
-    onSortingChange: setSorting,
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const nextState = updater({
+          pageIndex: pageInfo.currentPage - 1,
+          pageSize: pageInfo.limit,
+        });
+        handlePageChange(nextState.pageIndex + 1);
+      } else {
+        handlePageChange(updater.pageIndex + 1);
+      }
+    },
+    manualPagination: true,
+    pageCount: Math.ceil(pageInfo.total / pageInfo.limit),
+    // onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -208,12 +381,13 @@ const Currencies = () => {
         </table>
       </div>
 
+      {/* // Update pagination section in the return statement */}
       {/* Pagination */}
-      <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+      <div className="flex items-center justify-between mt-4">
         <div className="flex items-center gap-2">
           <select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={pageInfo.limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
             className="px-2 py-1 border rounded-lg"
           >
             {[10, 20, 30, 40, 50].map(pageSize => (
@@ -223,24 +397,26 @@ const Currencies = () => {
             ))}
           </select>
           <span className="text-gray-600">
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            Page {pageInfo.currentPage} of {Math.ceil(pageInfo.total / pageInfo.limit)}
           </span>
         </div>
+
         <div className="flex gap-1">
           <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => handlePageChange(pageInfo.currentPage - 1)}
+            disabled={pageInfo.currentPage === 1}
             className="px-3 py-1 border rounded-lg disabled:opacity-50"
           >
             Previous
           </button>
           
           {(() => {
-            const currentPage = table.getState().pagination.pageIndex + 1;
-            const totalPages = table.getPageCount();
+            const totalItems = pageInfo.total ?? 0;
+            const itemsPerPage = pageInfo.limit ?? 1;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const currentPage = pageInfo.currentPage ?? 1;
             const pageNumbers = [];
-            
+
             if (totalPages <= 7) {
               for (let i = 1; i <= totalPages; i++) {
                 pageNumbers.push(i);
@@ -260,7 +436,9 @@ const Currencies = () => {
                 pageNumbers.push('...');
               }
               
-              pageNumbers.push(totalPages);
+              if (totalPages > 1) {
+                pageNumbers.push(totalPages);
+              }
             }
             
             return pageNumbers.map((pageNumber, index) => (
@@ -269,7 +447,7 @@ const Currencies = () => {
               ) : (
                 <button
                   key={pageNumber}
-                  onClick={() => table.setPageIndex(pageNumber - 1)}
+                  onClick={() => handlePageChange(pageNumber)}
                   className={`px-3 py-1 border rounded-lg ${
                     currentPage === pageNumber
                       ? 'bg-[#f99109] text-white'
@@ -283,8 +461,8 @@ const Currencies = () => {
           })()}
 
           <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => handlePageChange(pageInfo.currentPage + 1)}
+            disabled={pageInfo.currentPage === Math.ceil(pageInfo.total / pageInfo.limit)}
             className="px-3 py-1 border rounded-lg disabled:opacity-50"
           >
             Next
@@ -315,13 +493,14 @@ const Currencies = () => {
               {modalMode === 'create' ? 'Add New Currency' : 
                modalMode === 'edit' ? 'Edit Currency' : 'Currency Details'}
             </h2>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
                 <label className="block text-sm font-medium text-gray-700">Currency Code
                   <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
+                  name="code"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.code}
                   readOnly={modalMode === 'view'}
@@ -329,12 +508,13 @@ const Currencies = () => {
                   required
                 />
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700">Country
                   <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
+                  name="country"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.country}
                   readOnly={modalMode === 'view'}
@@ -348,19 +528,21 @@ const Currencies = () => {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.name}
                   readOnly={modalMode === 'view'}
                   placeholder="e.g., Dollar, Pound, Euro"
                   required
                 />
-              </div>
+              </div> */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Buy Price
                   <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
+                  name="buy"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.buy}
                   readOnly={modalMode === 'view'}
@@ -372,6 +554,7 @@ const Currencies = () => {
                   <span className="text-red-500">*</span>
                 </label>
                 <select
+                  name="buyStatus"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.buyStatus}
                   disabled={modalMode === 'view'}
@@ -387,6 +570,7 @@ const Currencies = () => {
                 </label>
                 <input
                   type="number"
+                  name='sell'
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.sell}
                   readOnly={modalMode === 'view'}
@@ -398,6 +582,7 @@ const Currencies = () => {
                   <span className="text-red-500">*</span>
                 </label>
                 <select
+                  name="sellStatus"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.sellStatus}
                   disabled={modalMode === 'view'}
@@ -406,6 +591,29 @@ const Currencies = () => {
                   <option value={true}>Up</option>
                   <option value={false}>Down</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Currency Image
+                  <span className="text-red-500">*</span>
+                </label>
+                {(selectedCurrency?.img || previewImage) && (
+                  <div className="mt-2 mb-4">
+                    <img 
+                      src={previewImage || `${import.meta.env.VITE_API_BASE_URL}/${selectedCurrency?.img}`}
+                      alt={`${selectedCurrency?.name || 'New'} image`} 
+                      className="h-24 w-24 object-cover rounded-lg border"
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  name="img"
+                  className="mt-1 block w-full"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  disabled={modalMode === 'view'}
+                  required={modalMode === 'create'}
+                />
               </div>
               <div className="flex justify-end gap-2 mt-4">
                 <button

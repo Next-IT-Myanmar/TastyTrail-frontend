@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
-import { createCountry, getCountries, updateCountry, getCountryDetail } from '../services/countryService';
+import { createCountry, getCountries, updateCountry, getCountryDetail, deleteCountry } from '../services/countryService';
 import MyanmarFlag from '../assets/images/MyanmarFlag.jpg';
 import ThailandFlag from '../assets/images/ThaiFlag.jpg';
 import VietnamFlag from '../assets/images/VietnamFlag.jpg';
@@ -32,6 +32,7 @@ const Countries = () => {
   const [modalMode, setModalMode] = useState('create'); // create, edit, view
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [countryToDelete, setCountryToDelete] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -92,8 +93,6 @@ const Countries = () => {
       totalPages: Math.ceil(prev.total / newLimit)
     }));
   };
-
-  const [previewImage, setPreviewImage] = useState(null);
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -216,10 +215,26 @@ const Countries = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setCountries(countries.filter(country => country.id !== countryToDelete));
-    setIsDeleteModalOpen(false);
-    setCountryToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      const response = await deleteCountry(countryToDelete);
+      if (response) {
+        setMessage({
+          text: 'Country deleted successfully',
+          type: 'success'
+        });
+        fetchCountries(); // Refresh the list after deletion
+      }
+    } catch (error) {
+      console.error('Error deleting country:', error);
+      setMessage({
+        text: error.response?.data?.message || 'Failed to delete country',
+        type: 'error'
+      });
+    } finally {
+      setIsDeleteModalOpen(false);
+      setCountryToDelete(null);
+    }
   };
 
   const columns = useMemo(
