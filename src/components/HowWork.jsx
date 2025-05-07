@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaUserPlus, FaGlobe, FaRoute } from 'react-icons/fa';
-import FeatureApp from '../assets/images/Features_app.png';
+import FeatureApp from '../assets/images/features_app.png';
 import bgImage from '../assets/images/work_bg.jpg';
 import '../index.css'
 
