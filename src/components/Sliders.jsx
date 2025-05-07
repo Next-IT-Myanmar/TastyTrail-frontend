@@ -1,6 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
 import SliderImage from '../assets/images/slider1.jpg';
+import { useDispatch } from 'react-redux';
+import { createSlider, getSliderLists, getSliderDetail, deleteSlider} from '../services/sliderService'
+import { sendMessage } from '../redux/slices/messageSlice';
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,6 +14,8 @@ import {
 } from '@tanstack/react-table';
 
 const Sliders = () => {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -19,18 +24,65 @@ const Sliders = () => {
   const [modalMode, setModalMode] = useState('create');
   const [selectedSlider, setSelectedSlider] = useState(null);
   const [sliderToDelete, setSliderToDelete] = useState(null);
-  
+  const [sliders, setSliders] = useState([]);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    image: null
+  })
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1
+  })
 
-  const [sliders, setSliders] = useState([
-    {
-      id: 1,
-      title: 'Special Offer',
-      description: 'Get 20% off on all menu items',
-      image: 'https://example.com/slider1.jpg',
-      createdAt: '2024-01-15',
-      updatedAt: '2024-01-15'
+
+  const fetchSliders = async (e) => {
+    try {
+      setLoading(true);
+      const response = await getSliderLists(pageInfo.currentPage, pageInfo.limit)
+
+      if (response) {
+        const sortedData = [...response.data].sort((a, b) => b.id - a.id);
+        setSliders(sortedData);
+      
+        // Safely check for data and pagination
+        setPageInfo(prev => ({
+          ...prev,
+          total: response.pagination.total,
+          currentPage: response.pagination.page,
+          limit: response.pagination.limit,
+          totalPages: Math.ceil(response.pagination.total / response.pagination.limit)
+        }));
+      }
+    } catch {
+      console.error('Error fetching sliders:', error);
+      dispatch(sendMessage({ 
+        type: 'error', 
+        text: error?.response?.data?.message || 'Failed to fetch sliders' 
+      }));
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  // Add pagination handlers
+  const handlePageChange = (newPage) => {
+    const totalPages = Math.ceil(pageInfo.total / pageInfo.limit);
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPageInfo(prev => ({ ...prev, currentPage: newPage }));
+    }
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setPageInfo(prev => ({
+      ...prev,
+      limit: newLimit,
+      currentPage: 1,
+      totalPages: Math.ceil(prev.total / newLimit)
+    }));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -40,12 +92,46 @@ const Sliders = () => {
         setPreviewImage(reader.result);
       };
       reader.readAsDataURL(file);
+      setFormData(prev => ({ ...prev, image: file }));
     }
   };
 
-  const handleModal = (mode, slider = null) => {
+  const handleModal = async (mode, slider = null) => {
     setModalMode(mode);
-    setSelectedSlider(slider);
+    
+    if (mode === 'view' && slider) {
+      try {
+        // Set initial data from the table row
+        setFormData({
+          title: slider.title,
+          description: slider.description,
+          image: slider.image
+        });
+
+        const response = await getSliderDetail(slider.id);
+        console.log("response",response)
+        if (response) { // Check for nested data structure
+          setFormData({
+            title: response.data.title || '',
+            description: response.data.description || '',
+            image: response.data.image || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching slider details:', error);
+        dispatch(sendMessage({ 
+          type: 'error', 
+          text: 'Failed to fetch slider details'
+        }));
+      }
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        image: null
+      });
+    }
+    
     setIsModalOpen(true);
   };
 
@@ -54,11 +140,72 @@ const Sliders = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setSliders(sliders.filter(slider => slider.id !== sliderToDelete));
-    setIsDeleteModalOpen(false);
-    setSliderToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      const response = await deleteSlider(sliderToDelete);
+      
+      if (response) {
+        dispatch(sendMessage({ 
+          type: 'success', 
+          text: 'Slider deleted successfully'
+        }));
+        fetchSliders(); // Refresh the list after deletion
+      }
+    } catch (error) {
+      console.error('Error deleting slider:', error);
+      dispatch(sendMessage({ 
+        type: 'error', 
+        text: error?.response?.data?.message || 'Failed to delete slider'
+      }));
+    } finally {
+      setIsDeleteModalOpen(false);
+      setSliderToDelete(null);
+    }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+
+      if (formData.image) {
+        formDataToSend.append('image', formData.image);
+      }
+
+      let response;
+      if (modalMode === 'create') {
+        response = await createSlider(formDataToSend);
+      }
+
+      if (response) {
+        setIsModalOpen(false);
+        setFormData({
+          title: '',
+          description: '',
+          image: null
+        });
+        setPreviewImage(null);
+        fetchSliders();
+      }
+    } catch (error) {
+      console.error('Error handling slider:', error);
+      dispatch(sendMessage({ 
+        type: 'error', 
+        text: error?.response?.data?.message || `Failed to ${modalMode} slider` 
+      }));
+    }
+  };
+
+  useEffect(() => {
+    fetchSliders();
+  }, [pageInfo.currentPage, pageInfo.limit]);
+
+  useEffect(() => {
+    fetchSliders();
+  }, []);
 
   const columns = useMemo(
     () => [
@@ -71,7 +218,7 @@ const Sliders = () => {
         accessorKey: 'image',
         cell: ({ row }) => (
           <img 
-            src={SliderImage} 
+            src={`${import.meta.env.VITE_API_BASE_URL}/${row.original.image}`}
             alt={row.original.title} 
             className="h-16 w-24 object-cover rounded"
           />
@@ -86,14 +233,6 @@ const Sliders = () => {
         accessorKey: 'description',
       },
       {
-        header: 'Created At',
-        accessorKey: 'createdAt',
-      },
-      {
-        header: 'Updated At',
-        accessorKey: 'updatedAt',
-      },
-      {
         header: 'Actions',
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
@@ -102,12 +241,6 @@ const Sliders = () => {
               className="text-blue-500 hover:text-blue-700"
             >
               <FaEye />
-            </button>
-            <button
-              onClick={() => handleModal('edit', row.original)}
-              className="text-[#f99109] hover:text-yellow-700"
-            >
-              <FaEdit />
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
@@ -128,8 +261,25 @@ const Sliders = () => {
     state: {
       sorting,
       globalFilter,
+      pagination: {
+        pageIndex: pageInfo.currentPage -1,
+        pageSize: pageInfo.limit
+      },
     },
-    onSortingChange: setSorting,
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const nextState = updater({
+          pageIndex: pageInfo.currentPage - 1,
+          pageSize: pageInfo.limit,
+        });
+        handlePageChange(nextState.pageIndex + 1);
+      } else {
+        handlePageChange(updater.pageIndex + 1);
+      }
+    },
+    manualPagination: true,
+    pageCount: Math.ceil(pageInfo.total / pageInfo.limit),
+    // onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -201,8 +351,8 @@ const Sliders = () => {
       <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
         <div className="flex items-center gap-2">
           <select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={pageInfo.limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
             className="px-2 py-1 border rounded-lg"
           >
             {[10, 20, 30, 40, 50].map(pageSize => (
@@ -212,15 +362,14 @@ const Sliders = () => {
             ))}
           </select>
           <span className="text-gray-600">
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
+            Page {pageInfo.currentPage} of {Math.ceil(pageInfo.total / pageInfo.limit)}
           </span>
         </div>
 
         <div className="flex gap-1">
           <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => handlePageChange(pageInfo.currentPage - 1)}
+            disabled={pageInfo.currentPage === 1}
             className="px-3 py-1 border rounded-lg disabled:opacity-50"
           >
             Previous
@@ -259,7 +408,7 @@ const Sliders = () => {
               ) : (
                 <button
                   key={pageNumber}
-                  onClick={() => table.setPageIndex(pageNumber - 1)}
+                  onClick={() => handlePageChange(pageNumber)}
                   className={`px-3 py-1 border rounded-lg ${
                     currentPage === pageNumber
                       ? 'bg-[#f99109] text-white'
@@ -273,8 +422,8 @@ const Sliders = () => {
           })()}
 
           <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => handlePageChange(pageInfo.currentPage + 1)}
+            disabled={pageInfo.currentPage === Math.ceil(pageInfo.total / pageInfo.limit)}
             className="px-3 py-1 border rounded-lg disabled:opacity-50"
           >
             Next
@@ -282,7 +431,7 @@ const Sliders = () => {
         </div>
       </div>
 
-      {/* Create/Edit/View Modal */}
+      {/* Create/View Modal */}
       {isModalOpen && (
         <div 
           className="fixed inset-0 bg-gray-500/30 backdrop-blur-sm flex items-center justify-center p-4 z-50"
@@ -302,18 +451,19 @@ const Sliders = () => {
             </button>
 
             <h2 className="text-xl font-bold mb-4 pr-8">
-              {modalMode === 'create' ? 'Add New Slider' : 
-               modalMode === 'edit' ? 'Edit Slider' : 'Slider Details'}
+              {modalMode === 'create' ? 'Add New Slider' : 'Slider Details'}
             </h2>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Title
                   <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                  defaultValue={selectedSlider?.title}
                   readOnly={modalMode === 'view'}
                   required
                 />
@@ -323,9 +473,11 @@ const Sliders = () => {
                   <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   rows="3"
-                  defaultValue={selectedSlider?.description}
                   readOnly={modalMode === 'view'}
                   required
                 />
@@ -336,15 +488,16 @@ const Sliders = () => {
                 </label>
                 <input
                   type="file"
+                  name="image"
+                  onChange={handleImageChange}
                   className="mt-1 block w-full"
                   accept="image/*"
-                  onChange={handleImageChange}
                   disabled={modalMode === 'view'}
                   required={modalMode === 'create'}
                 />
-                {(modalMode === 'view' || modalMode === 'edit') ? (
+                {(modalMode === 'view') ? (
                   <img
-                    src={SliderImage}
+                    src={`${import.meta.env.VITE_API_BASE_URL}/${formData.image}`}
                     alt="Preview"
                     className="mt-2 h-32 w-full object-cover rounded-lg"
                   />
@@ -369,7 +522,7 @@ const Sliders = () => {
                     type="submit"
                     className="px-4 py-2 text-white bg-[#f99109] rounded-md hover:bg-yellow-600"
                   >
-                    {modalMode === 'create' ? 'Create' : 'Update'}
+                    Create
                   </button>
                 )}
               </div>

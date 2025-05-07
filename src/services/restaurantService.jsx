@@ -28,27 +28,6 @@ export const getRestaurantLists = async (page = 1, limit = 10) => {
     }
 };
 
-// export const updateRestaurant = async (formData) => {
-//     try {
-//       const id = formData.get('id');
-//       const response = await axios.patch(
-//         `${import.meta.env.VITE_API_BASE_URL}/restaurants/${id}`,
-//         formData,
-//         {
-//           headers: {
-//             'Content-Type': 'multipart/form-data',
-//           },
-//         }
-//       );
-//       return { success: true, data: response };
-//     } catch (error) {
-//       return { 
-//         success: false, 
-//         error: error.response?.data?.message || error.message 
-//       };
-//     }
-//   };
-
 export const updateRestaurant = async (id, formData) => {
     console.log("id",id)
     console.log("FormDataaaa",formData)

@@ -31,6 +31,20 @@ export const loginUser = async (credentials) => {
     }
 };
 
+export const logoutUser = async () => {
+    try {
+        const response = await api.post('/auth/logout', {}, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
 // Keep the working fetch version as backup
 // export const registerUserFetch = async (requestBody) => {
 //     try {
