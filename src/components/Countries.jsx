@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
 import { createCountry, getCountries, updateCountry, getCountryDetail, deleteCountry } from '../services/countryService';
+import { formatToLocalDateTime } from '../utils/utils';
 import {
   useReactTable,
   getCoreRowModel,
@@ -156,17 +157,18 @@ const Countries = () => {
 
   const handleModal = async (mode, country = null) => {
     setModalMode(mode);
+    setPreviewImage(null); // Reset preview image
     
     if (mode === 'view' && country) {
       try {
         setLoading(true);
         const response = await getCountryDetail(country.id);
         if (response && response.data) {
+          const flagUrl = `${import.meta.env.VITE_API_BASE_URL}/${response.data.flag}`;
           setSelectedCountry({
             ...response.data,
-            flag: `${import.meta.env.VITE_API_BASE_URL}/${response.data.flag}`
+            flag: flagUrl
           });
-          // Set form data for viewing
           setFormData({
             name: response.data.name,
             description: response.data.description,
@@ -185,13 +187,14 @@ const Countries = () => {
     } else {
       setSelectedCountry(country);
       if (country) {
+        const flagUrl = `${import.meta.env.VITE_API_BASE_URL}/${country.flag}`;
         setFormData({
           name: country.name,
           description: country.description,
           flag: country.flag
         });
+        setPreviewImage(flagUrl); // Set preview image for edit mode
       } else {
-        // Reset form for create mode
         setFormData({
           name: '',
           description: '',
@@ -242,6 +245,13 @@ const Countries = () => {
       {
         header: 'ID',
         accessorKey: 'id',
+        cell: ({ row }) => (
+          <span title={row.original.id}>
+            {row.original.id.length > 8 
+              ? `${row.original.id.substring(0, 8)}...` 
+              : row.original.id}
+          </span>
+        ),
       },
       {
         header: 'Flag',
@@ -250,7 +260,7 @@ const Countries = () => {
           <img 
             src={`${import.meta.env.VITE_API_BASE_URL}/${row.original.flag}`}
             alt={row.original.name} 
-            className="h-8 w-8 rounded-full"
+            className='w-15'
           />
         ),
       },
@@ -261,14 +271,23 @@ const Countries = () => {
       {
         header: 'Description',
         accessorKey: 'description',
+        cell: ({ row }) => (
+          <span title={row.original.description}>
+            {row.original.description.length > 8 
+              ? `${row.original.description.substring(0, 8)}...` 
+              : row.original.description}
+          </span>
+        ),
       },
       {
         header: 'Created At',
         accessorKey: 'createdAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.createdAt)
       },
       {
         header: 'Updated At',
         accessorKey: 'updatedAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.updatedAt)
       },
       {
         header: 'Actions',
@@ -331,6 +350,17 @@ const Countries = () => {
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
     });
+
+    // Add useEffect for auto-dismissing notifications
+    useEffect(() => {
+      if (message.text) {
+        const timer = setTimeout(() => {
+          setMessage({ text: '', type: '' });
+        }, 4000); // 5 seconds
+  
+        return () => clearTimeout(timer);
+      }
+    }, [message]);
 
   // Add useEffect to refetch when pagination changes
   useEffect(() => {
@@ -596,7 +626,7 @@ const Countries = () => {
                     <img 
                       src={previewImage || selectedCountry?.flag} 
                       alt={`${selectedCountry?.name || 'New'} flag`} 
-                      className="h-24 w-24 object-cover rounded-lg border"
+                      className="h-24 w-24 object-cover rounded-lg"
                     />
                   </div>
                 )}

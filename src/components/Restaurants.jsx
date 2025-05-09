@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaStar } from 'react-icons/fa';
 import { getRestaurantLists, deleteRestaurant } from '../services/restaurantService';
+import { formatToLocalDateTime } from '../utils/utils';
 import {
   useReactTable,
   getCoreRowModel,
@@ -49,8 +50,6 @@ const Restaurants = () => {
           ...restaurant,
           img: `${import.meta.env.VITE_API_BASE_URL}/${restaurant.img}`,
           otherPhoto: restaurant.otherPhoto.map(photo => `${import.meta.env.VITE_API_BASE_URL}/${photo}`),
-          createdAt: new Date(restaurant.createdAt).toLocaleDateString(),
-          updatedAt: new Date(restaurant.updatedAt).toLocaleDateString()
         }));
 
         setRestaurants(formattedData);
@@ -58,8 +57,8 @@ const Restaurants = () => {
         // Update pagination info
         setPageInfo(prev => ({
           ...prev,
-          total: response.total || formattedData.length,
-          totalPages: Math.ceil((response.total || formattedData.length) / prev.limit)
+          total: response.pagination.total,
+          totalPages: Math.ceil(response.pagination.total / prev.limit)
         }));
       }
     } catch (error) {
@@ -220,6 +219,13 @@ const Restaurants = () => {
       {
         header: 'ID',
         accessorKey: 'id',
+        cell: ({ row }) => (
+          <span title={row.original.id}>
+            {row.original.id.length > 8 
+              ? `${row.original.id.substring(0, 8)}...` 
+              : row.original.id}
+          </span>
+        ),
       },
       {
         header: 'Image',
@@ -240,9 +246,11 @@ const Restaurants = () => {
         header: 'Description',
         accessorKey: 'description',
         cell: ({ row }) => (
-          <div className="w-[200px] truncate" title={row.original.description}>
-            {row.original.description}
-          </div>
+          <span title={row.original.description}>
+            {row.original.description.length > 20 
+              ? `${row.original.description.substring(0, 20)}...` 
+              : row.original.description}
+          </span>
         ),
       },
       {
@@ -258,10 +266,12 @@ const Restaurants = () => {
       {
         header: 'Created At',
         accessorKey: 'createdAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.createdAt)
       },
       {
         header: 'Updated At',
         accessorKey: 'updatedAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.updatedAt)
       },
       {
         header: 'Actions',

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
 import { createCuisine, getCuisines, getCuisineDetail, updateCuisine, deleteCuisine } from '../services/cuisineService';
+import { formatToLocalDateTime } from '../utils/utils';
 import {
   useReactTable,
   getCoreRowModel,
@@ -255,14 +256,23 @@ const Cuisines = () => {
       {
         header: 'Description',
         accessorKey: 'description',
+        cell: ({ row }) => (
+          <span title={row.original.description || ''}>
+            {(row.original.description || '').length > 8 
+              ? `${row.original.description.substring(0, 8)}...` 
+              : row.original.description || ''}
+          </span>
+        ),
       },
       {
         header: 'Created At',
         accessorKey: 'createdAt',
+        cell: ({ row }) => row.original.createdAt ? formatToLocalDateTime(row.original.createdAt) : '-'
       },
       {
         header: 'Updated At',
         accessorKey: 'updatedAt',
+        cell: ({ row }) => row.original.updatedAt ? formatToLocalDateTime(row.original.updatedAt) : '-'
       },
       {
         header: 'Actions',
@@ -583,14 +593,14 @@ const Cuisines = () => {
                     disabled={modalMode === 'view'}
                     required={modalMode === 'create'}
                   />
-                  {(modalMode === 'view' || modalMode === 'edit') && selectedCuisine?.image && (
+                  {(modalMode === 'view' || modalMode === 'edit') && !previewImage && selectedCuisine?.image && (
                     <img
                       src={`${import.meta.env.VITE_API_BASE_URL}/${selectedCuisine.image}`}
                       alt="Cuisine"
                       className="mt-2 h-32 w-full object-cover rounded-lg"
                     />
                   )}
-                  {previewImage && modalMode === 'create' && (
+                  {previewImage && (modalMode === 'create' || modalMode === 'edit') && (
                     <img
                       src={previewImage}
                       alt="Preview"

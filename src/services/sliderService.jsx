@@ -13,6 +13,8 @@ export const createSlider = async (formData) => {
     }
 };
 
+
+
 export const getSliderLists = async (page = 1, limit = 10) => {
     try {
         const response = await api.get('/sliders', {
@@ -31,6 +33,19 @@ export const getSliderDetail = async (id) => {
     try {
         const response = await api.get(`/sliders/${id}`);
         return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const updateSlider = async (id, formData) => {
+    try {
+        const response = await api.patch(`/sliders/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response;
     } catch (error) {
         throw error;
     }
