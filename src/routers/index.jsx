@@ -5,6 +5,7 @@ import Login from '../pages/Login';
 import HomeLayout from '../layouts/HomeLayout';
 import LoginLayout from '../layouts/LoginLayout';
 import AdminLayout from '../layouts/AdminLayout';
+import ProtectedRoute from '../components/ProtectedRoute';
 import SignUp from '../pages/SignUp';
 import Dashboard from '../components/Dashboard';
 import Countries from '../components/Countries';
@@ -61,7 +62,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    Component: AdminLayout,
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/admin",
