@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { createSlider, getSliderLists, getSliderDetail, deleteSlider} from '../services/sliderService'
+import { createSlider, updateSlider, getSliderLists, getSliderDetail, deleteSlider} from '../services/sliderService'
 import { sendMessage } from '../redux/slices/messageSlice';
 import {
   useReactTable,
@@ -11,6 +11,7 @@ import {
   getFilteredRowModel,
   flexRender,
 } from '@tanstack/react-table';
+import { TbInputAi } from 'react-icons/tb';
 
 const Sliders = () => {
   const dispatch = useDispatch();
@@ -97,8 +98,9 @@ const Sliders = () => {
 
   const handleModal = async (mode, slider = null) => {
     setModalMode(mode);
+    setSelectedSlider(slider); // Add this line to store the selected slider
     
-    if (mode === 'view' && slider) {
+    if ((mode === 'view' || mode === 'edit') && slider) {
       try {
         // Set initial data from the table row
         setFormData({
@@ -108,13 +110,15 @@ const Sliders = () => {
         });
 
         const response = await getSliderDetail(slider.id);
-        console.log("response",response)
-        if (response) { // Check for nested data structure
+        if (response) {
           setFormData({
             title: response.data.title || '',
             description: response.data.description || '',
             image: response.data.image || ''
           });
+          if (mode === 'edit') {
+            setPreviewImage(`${import.meta.env.VITE_API_BASE_URL}/${response.data.image}`);
+          }3
         }
       } catch (error) {
         console.error('Error fetching slider details:', error);
@@ -129,6 +133,7 @@ const Sliders = () => {
         description: '',
         image: null
       });
+      setPreviewImage(null);
     }
     
     setIsModalOpen(true);
@@ -170,13 +175,15 @@ const Sliders = () => {
       formDataToSend.append('title', formData.title);
       formDataToSend.append('description', formData.description);
 
-      if (formData.image) {
+      if (formData.image instanceof File) {
         formDataToSend.append('image', formData.image);
       }
 
       let response;
       if (modalMode === 'create') {
         response = await createSlider(formDataToSend);
+      } else if (modalMode === 'edit') {
+        response = await updateSlider(selectedSlider.id, formDataToSend);
       }
 
       if (response) {
@@ -187,6 +194,10 @@ const Sliders = () => {
           image: null
         });
         setPreviewImage(null);
+        dispatch(sendMessage({ 
+          type: 'success', 
+          text: `Slider ${modalMode === 'create' ? 'created' : 'updated'} successfully!` 
+        }));
         fetchSliders();
       }
     } catch (error) {
@@ -228,7 +239,7 @@ const Sliders = () => {
         accessorKey: 'title',
       },
       {
-        header: 'Description',
+        header: 'Link Address',
         accessorKey: 'description',
         cell: ({ row }) => (
           <span title={row.original.description}>
@@ -247,6 +258,12 @@ const Sliders = () => {
               className="text-blue-500 hover:text-blue-700"
             >
               <FaEye />
+            </button>
+            <button
+              onClick={() => handleModal('edit', row.original)}
+              className="text-[#f99109] hover:text-yellow-700"
+            >
+              <FaEdit />
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
@@ -475,10 +492,10 @@ const Sliders = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description
+                <label className="block text-sm font-medium text-gray-700">Link Address
                   <span className="text-red-500">*</span>
                 </label>
-                <textarea
+                <input
                   name="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -501,13 +518,14 @@ const Sliders = () => {
                   disabled={modalMode === 'view'}
                   required={modalMode === 'create'}
                 />
-                {(modalMode === 'view') ? (
+                {(modalMode === 'view' || modalMode === 'edit') && formData.image && !previewImage && (
                   <img
                     src={`${import.meta.env.VITE_API_BASE_URL}/${formData.image}`}
-                    alt="Preview"
+                    alt="Current"
                     className="mt-2 h-32 w-full object-cover rounded-lg"
                   />
-                ) : previewImage && (
+                )}
+                {previewImage && (
                   <img
                     src={previewImage}
                     alt="Preview"
@@ -528,7 +546,7 @@ const Sliders = () => {
                     type="submit"
                     className="px-4 py-2 text-white bg-[#f99109] rounded-md hover:bg-yellow-600"
                   >
-                    Create
+                    {modalMode === 'create' ? 'Create' : 'Update'}
                   </button>
                 )}
               </div>

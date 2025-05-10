@@ -43,7 +43,7 @@ const AdminLayout = () => {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0`}>
         {/* Logo */}
-        <div className="flex items-center gap-2 p-4 border-b">
+        <div className="flex items-center gap-2 p-4 border-b border-">
           <img src={logo} alt="Logo" className="w-8 h-8" />
           <span className="text-xl font-bold text-red-700">MM Tasty Trail</span>
         </div>

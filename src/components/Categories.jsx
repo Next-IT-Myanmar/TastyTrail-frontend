@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect} from 'react';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort } from 'react-icons/fa';
 import {createCategory, getCategories, getCategoryDetail, updateCategory, deleteCategory} from '../services/categoryService';
-import categoryImage from '../assets/images/bibimbap.png';
+import { formatToLocalDateTime } from '../utils/utils';
 import {
   useReactTable,
   getCoreRowModel,
@@ -94,7 +94,15 @@ const Categories = () => {
     if (type === 'file') {
       const file = files[0];
       setFormData(prev => ({ ...prev, img: file }));
-      handleImageChange(e);
+      
+      // Add preview for the new image
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewImage(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -166,6 +174,7 @@ const Categories = () => {
   const handleModal = async (mode, category = null) => {
     setModalMode(mode);
     setSelectedCategory(category);
+    setPreviewImage(null); // Reset preview image
     
     if (mode === 'view') {
       try {
@@ -183,10 +192,12 @@ const Categories = () => {
         });
       }
     } else if (mode === 'edit') {
+      // Set preview image for edit mode
+      setPreviewImage(`${import.meta.env.VITE_API_BASE_URL}/${category?.img}`);
       setFormData({
         name: category?.name || '',
         description: category?.description || '',
-        img: `${import.meta.env.VITE_API_BASE_URL}/${category?.img}` || ''
+        img: category?.img || ''
       });
     } else {
       setFormData({ name: '', description: '', img: null });
@@ -310,14 +321,23 @@ const Categories = () => {
       {
         header: 'Description',
         accessorKey: 'description',
+        cell: ({ row }) => (
+          <span title={row.original.description}>
+            {row.original.description.length > 8 
+              ? `${row.original.description.substring(0, 8)}...` 
+              : row.original.description}
+          </span>
+        ),
       },
       {
         header: 'Created At',
         accessorKey: 'createdAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.createdAt)
       },
       {
         header: 'Updated At',
         accessorKey: 'updatedAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.updatedAt)
       },
       {
         header: 'Actions',
@@ -659,14 +679,14 @@ const Categories = () => {
                     disabled={modalMode === 'view'}
                     required={modalMode === 'create'}
                   />
-                  {(modalMode === 'view' || modalMode === 'edit') && selectedCategory?.img && (
+                  {(modalMode === 'view' || modalMode === 'edit') && !previewImage &&  selectedCategory?.img && (
                     <img
                       src={`${import.meta.env.VITE_API_BASE_URL}/${selectedCategory.img}`}
                       alt="Category"
                       className="mt-2 h-32 w-full object-cover rounded-lg"
                     />
                   )}
-                  {previewImage && modalMode === 'create' && (
+                  {previewImage && (modalMode === 'create' || modalMode === 'edit') && (
                     <img
                       src={previewImage}
                       alt="Preview"

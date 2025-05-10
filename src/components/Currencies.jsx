@@ -3,6 +3,7 @@ import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaTimes, FaArrowUp, FaArrowDown
 import { createCurrency, getCurrencyLists, updateCurrency, deleteCurrency } from '../services/currencyService';
 import { useDispatch } from 'react-redux';
 import { sendMessage } from '../redux/slices/messageSlice';
+import { formatToLocalDateTime } from '../utils/utils';
 import {
   useReactTable,
   getCoreRowModel,
@@ -255,10 +256,12 @@ const Currencies = () => {
       {
         header: 'Created At',
         accessorKey: 'createdAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.createdAt)
       },
       {
         header: 'Updated At',
         accessorKey: 'updatedAt',
+        cell: ({ row }) => formatToLocalDateTime(row.original.updatedAt)
       },
       {
         header: 'Actions',
@@ -543,6 +546,8 @@ const Currencies = () => {
                 <input
                   type="number"
                   name="buy"
+                  step="0.01"
+                  min="0"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.buy}
                   readOnly={modalMode === 'view'}
@@ -571,6 +576,8 @@ const Currencies = () => {
                 <input
                   type="number"
                   name='sell'
+                  step="0.01"
+                  min="0"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.sell}
                   readOnly={modalMode === 'view'}
@@ -601,7 +608,7 @@ const Currencies = () => {
                     <img 
                       src={previewImage || `${import.meta.env.VITE_API_BASE_URL}/${selectedCurrency?.img}`}
                       alt={`${selectedCurrency?.name || 'New'} image`} 
-                      className="h-24 w-24 object-cover rounded-lg border"
+                      className="h-24 w-24 object-cover rounded-lg"
                     />
                   </div>
                 )}
