@@ -432,13 +432,13 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
               </button>
             </div>
             {Array.from({ length: phoneCount }).map((_, index) => (
-              <div key={index} className="mb-2">
+              <div key={index} className="flex gap-2 mb-2">
                 <input
                   type="tel"
                   name={`phones[${index}]`}
                   pattern="[0-9\-\+]{1,20}"
                   maxLength={20}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={restaurant?.phones?.[index]}
                   required={index === 0}
                   placeholder="Enter phone number (e.g., +1234567890)"
@@ -448,6 +448,15 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
                     if (!/[0-9\-\+]/.test(e.key)) e.preventDefault();
                   }}
                 />
+                {index !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setPhoneCount(prev => prev - 1)}
+                    className="self-center text-red-500 hover:text-red-700"
+                  >
+                    <FaTimes />
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -775,21 +784,37 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
               </button>
             </div>
             {Array.from({ length: socialLinksCount }).map((_, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-                <input
-                  type="text"
-                  name={`socialLinks-${index}-name`}
-                  placeholder="Platform Name"
-                  className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                  defaultValue={restaurant?.socialLinks[index]?.platform}
-                />
-                <input
-                  type="url"
-                  name={`socialUrl${index}`}
-                  placeholder="URL"
-                  className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                  defaultValue={restaurant?.socialLinks[index]?.url}
-                />
+              <div key={index} className="flex gap-2 mb-2">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    name={`socialLinks-${index}-name`}
+                    placeholder="Platform Name"
+                    className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
+                    defaultValue={restaurant?.socialLinks[index]?.platform}
+                  />
+                  <input
+                    type="url"
+                    name={`socialUrl${index}`}
+                    placeholder="URL"
+                    className="col-span-2 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
+                    defaultValue={restaurant?.socialLinks[index]?.url}
+                  />
+                </div>
+                {index !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSocialLinksCount(prev => prev - 1);
+                      // Remove the social link at this index
+                      const updatedSocialLinks = restaurant?.socialLinks.filter((_, i) => i !== index);
+                      restaurant.socialLinks = updatedSocialLinks;
+                    }}
+                    className="self-center text-red-500 hover:text-red-700"
+                  >
+                    <FaTimes />
+                  </button>
+                )}
               </div>
             ))}
           </div>

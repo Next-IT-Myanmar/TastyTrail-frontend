@@ -316,7 +316,7 @@ const Currencies = () => {
     },
     manualPagination: true,
     pageCount: Math.ceil(pageInfo.total / pageInfo.limit),
-    // onSortingChange: setSorting,
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
