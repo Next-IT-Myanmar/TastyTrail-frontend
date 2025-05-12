@@ -83,6 +83,13 @@ const RestaurantCreateModal = ({ onClose }) => {
     setPhoneNumbers(newPhoneNumbers);
   };
 
+  const handleDeletePhone = (index) => {
+    if (index !== 0) { // Prevent deleting the first phone number input
+      const newPhoneNumbers = phoneNumbers.filter((_, i) => i !== index);
+      setPhoneNumbers(newPhoneNumbers);
+    }
+  };
+
   const handleDeleteImage = (index) => {
     // Remove image preview
     setAdditionalImagePreviews(prev => {
@@ -441,18 +448,28 @@ const RestaurantCreateModal = ({ onClose }) => {
               </button>
             </div>
             {phoneNumbers.map((phone, index) => (
-              <input
-                key={index}
-                type="tel"
-                name={`phoneNumber${index}`}
-                value={phone}
-                onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
-                pattern="[0-9\-]{1,20}"
-                maxLength={20}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2 mb-2"
-                required={index === 0}
-                placeholder="Enter phone number (numbers only)"
-              />
+              <div key={index} className="flex gap-2 mb-2">
+                <input
+                  type="tel"
+                  name={`phoneNumber${index}`}
+                  value={phone}
+                  onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
+                  pattern="[0-9\-]{1,20}"
+                  maxLength={20}
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
+                  required={index === 0}
+                  placeholder="Enter phone number (numbers only)"
+                />
+                {index !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeletePhone(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FaTimes />
+                  </button>
+                )}
+              </div>
             ))}
           </div>
           {/* Operating Days */}
@@ -831,6 +848,15 @@ const RestaurantCreateModal = ({ onClose }) => {
                   placeholder="URL"
                   className="rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                 />
+                {index !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSocialLinksCount(prev => prev - 1)}
+                    className="self-center text-red-500 hover:text-red-700"
+                  >
+                    <FaTimes />
+                  </button>
+                )}
               </div>
             ))}
           </div>
