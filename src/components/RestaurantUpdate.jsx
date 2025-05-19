@@ -203,26 +203,88 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
         .filter(value => value);
       formData.append('phones', phoneNumbers.join(','));
 
-      // Handle main image
-      const mainImageInput = e.target.elements.img;
-      if (mainImageInput?.files[0]) {
-        formData.append('img', mainImageInput.files[0]);
-      }
+           // Handle main image
+           const mainImageInput = e.target.elements.img;
+           if (mainImageInput?.files[0]) {
+             formData.append('img', mainImageInput.files[0]);
+           } else if (imagePreview && !imagePreview.startsWith('data:')) {
+             try {
+               const response = await fetch(imagePreview);
+               const blob = await response.blob();
+               formData.append('img', blob);
+             } catch (error) {
+               console.error('Error converting main image to binary:', error);
+             }
+           }
+     
+           // Handle additional images
+           const additionalImageInputs = Array.from(e.target.elements)
+             .filter(element => element.name.startsWith('additionalImages-'))
+             .map(element => element.files[0])
+             .filter(file => file);
+           
+           // Clear existing otherPhoto array
+           formData.delete('otherPhoto');
 
-      // Handle IDs as arrays
-      formData.append('categoryIds', selectedCategories.map(cat => cat.id).join(','));
-      formData.append('countryIds', selectedCountries.map(country => country.id).join(','));
-      formData.append('cuisineIds', selectedCuisines.map(cuisine => cuisine.id).join(','));
+           // Handle new image files first
+          additionalImageInputs.forEach(file => {
+            if (file) {
+              formData.append('otherPhoto', file);
+            }
+          });
 
-      // Handle additional images
-      const additionalImageInputs = Array.from(e.target.elements)
-        .filter(element => element.name.startsWith('additionalImages-'))
-        .map(element => element.files[0])
-        .filter(file => file);
+          // Handle existing images from additionalImagePreviews
+          for (let i = 0; i < additionalImagePreviews.length; i++) {
+            const preview = additionalImagePreviews[i];
+            if (!preview.startsWith('data:')) {
+              try {
+                const response = await fetch(preview);
+                const blob = await response.blob();
+                formData.append('otherPhoto', blob);
+              } catch (error) {
+                console.error('Error converting image to binary:', error);
+              }
+            } else if (preview.startsWith('data:')) {
+              // Handle newly selected images that are in data URL format
+              try {
+                const response = await fetch(preview);
+                const blob = await response.blob();
+                formData.append('otherPhoto', blob);
+              } catch (error) {
+                console.error('Error converting data URL to blob:', error);
+              }
+            }
+          }
 
-      additionalImageInputs.forEach(file => {
-        formData.append('otherPhoto', file);
-      });
+          // Log formData entries for debugging
+          for (let pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+          }
+     
+           // Convert and append existing images
+           const existingImagesPromises = additionalImagePreviews
+             .filter(preview => !preview.startsWith('data:'))
+             .map(async (preview) => {
+               try {
+                 const response = await fetch(preview);
+                 return await response.blob();
+               } catch (error) {
+                 console.error('Error converting additional image to binary:', error);
+                 return null;
+               }
+             });
+     
+           const existingBlobs = await Promise.all(existingImagesPromises);
+           existingBlobs
+             .filter(blob => blob !== null)
+             .forEach(blob => {
+               formData.append('otherPhoto', blob);
+             });
+     
+           // Append new image files
+           additionalImageInputs.forEach(file => {
+             formData.append('otherPhoto', file);
+           });
 
       // Handle social links in the exact format required
       const socialLinks = [];
@@ -360,16 +422,26 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
     };
   }, []);
 
-  // Add this useEffect to handle the initial image
-  useEffect(() => {
-    if (restaurant?.img) {
-      // Check if the image path already includes the base URL
-      const imagePath = restaurant.img.startsWith('http') 
-        ? restaurant.img 
-        : `${import.meta.env.VITE_API_BASE_URL}/${restaurant.img}`;
-      setImagePreview(imagePath);
-    }
-  }, [restaurant]);
+    // Update the useEffect for initial images
+    useEffect(() => {
+      if (restaurant?.img) {
+        const imagePath = restaurant.img.startsWith('http') 
+          ? restaurant.img 
+          : `${import.meta.env.VITE_API_BASE_URL}/${restaurant.img}`;
+        setImagePreview(imagePath);
+      }
+  
+      // Handle additional images
+      if (restaurant?.otherPhoto && restaurant.otherPhoto.length > 0) {
+        const otherPhotoPreviews = restaurant.otherPhoto.map(photo => 
+          photo.startsWith('http')
+            ? photo
+            : `${import.meta.env.VITE_API_BASE_URL}/${photo}`
+        );
+        setAdditionalImagePreviews(otherPhotoPreviews);
+        setAdditionalImagesCount(otherPhotoPreviews.length);
+      }
+    }, [restaurant]);
 
   return (
     <div className="w-full">
@@ -728,7 +800,7 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
             )}
           </div>
 
-          {/* Additional Images Section */}
+            {/* Additional Images Section */}
           <div>
             <div className="flex justify-between items-center">
               <label className="block text-sm font-medium text-gray-700">Additional Images</label>

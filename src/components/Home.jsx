@@ -53,10 +53,11 @@ const Home = () => {
             backgroundImage: `url(${backgroundImage})`,
             // backgroundBlendMode: 'overlay',
             // backgroundColor: 'rgba(255, 255, 255, 0.9)'
-            backgroundColor: 'rgba(255, 255, 255, 0.78)'
           }}
-        >
-          <div className="container mx-auto px-4">
+    >
+          {/* Dark overlay for mobile */}
+          {/* <div className="absolute inset-0 bg-black/20 md:bg-transparent"></div> */}
+          <div className="container mx-auto px-4 relative z-10">
             <div className="grid md:grid-cols-2 gap-8 items-center relative">
               {/* Left Column */}
               {/* <div className="space-y-6 md:space-y-8 text-center md:text-left relative p-10 rounded-[10px]" style={{backgroundColor: 'rgba(255, 255, 255, 0.5)'}}> */}
@@ -65,7 +66,7 @@ const Home = () => {
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black leading-tight">
                   Discover<br />Myanmar's Best Food Experience
                 </h1>
-                <p className="text-base sm:text-lg text-black font-semibold text-2xl max-w-xl mx-auto md:mx-0">
+                <p className="text-base sm:text-lg text-black font-semibold text-2xl max-w-xl mx-auto md:mx-0 p-4 md:p-0 rounded-lg md:rounded-none backdrop-blur-sm md:backdrop-blur-none bg-white/30 md:bg-transparent">
                   Explore authentic Myanmar restaurants, cafes, and street food. Your ultimate guide to local flavors.
                 </p>
                 <div className="flex flex-wrap justify-center md:justify-start gap-7 mt-[70px]">

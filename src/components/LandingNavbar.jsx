@@ -81,7 +81,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden mt-4">
+          <div className="md:hidden mt-4 bg-white absolute top-11 left-0 right-0 p-6 shadow-lg">
             <div className="flex flex-col space-y-4">
               <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="hover:text-gray-700 text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Home</a>
               <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="hover:text-gray-700 text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Feature</a>
