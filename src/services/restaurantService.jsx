@@ -60,3 +60,18 @@ export const deleteRestaurant = async (id) => {
         throw error;
     }
 }
+
+export const getRestaurantsByCountry = async (countryIds, page = 1, limit = 10) => {
+    try {
+        const response = await api.get('/restaurants/by-country-cuisines', {
+            params: {
+                countryIds,
+                page,
+                limit,
+            },
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};

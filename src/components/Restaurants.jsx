@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSort, FaStar } from 'react-icons/fa';
-import { getRestaurantLists, deleteRestaurant } from '../services/restaurantService';
+import { getRestaurantLists, deleteRestaurant, getRestaurantsByCountry } from '../services/restaurantService';
+import { getCountries } from '../services/countryService';
 import { formatToLocalDateTime } from '../utils/utils';
 import {
   useReactTable,
@@ -18,6 +19,8 @@ import RestaurantUpdate from './RestaurantUpdate';
 const Restaurants = () => {
   const [loading, setLoading] = useState(false);
   const message = useSelector((state) => state.message);
+  const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState('');
   const [restaurants, setRestaurants] = useState([]);
   const [sorting, setSorting] = useState([])
   const [globalFilter, setGlobalFilter] = useState('');
@@ -41,11 +44,31 @@ const Restaurants = () => {
   const fetchRestaurants = async () => {
     try {
       setLoading(true);
-      const response = await getRestaurantLists(pageInfo.currentPage, pageInfo.limit);
-      console.log("response",response)
+      let response;
+      
+      if (selectedCountry) {
+        // Format countryIds as an array parameter
+        const params = {
+          countryIds: selectedCountry,
+          page: pageInfo.currentPage,
+          limit: pageInfo.limit
+        };
+
+        // Use the country-specific endpoint when a country is selected
+        response = await getRestaurantsByCountry(
+          params.countryIds,
+          params.page,
+          params.limit
+        );
+      } else {
+        // Use the default endpoint when no country is selected
+        response = await getRestaurantLists(
+          pageInfo.currentPage,
+          pageInfo.limit
+        );
+      }
 
       if(response && response.data) {
-        // Map the response data to include the image URL
         const formattedData = response.data.map(restaurant => ({
           ...restaurant,
           img: `${import.meta.env.VITE_API_BASE_URL}/${restaurant.img}`,
@@ -53,8 +76,6 @@ const Restaurants = () => {
         }));
 
         setRestaurants(formattedData);
-
-        // Update pagination info
         setPageInfo(prev => ({
           ...prev,
           total: response.pagination.total,
@@ -63,10 +84,6 @@ const Restaurants = () => {
       }
     } catch (error) {
       console.error('Error fetching restaurants:', error);
-      setMessage({
-        text: error.response?.message || 'Failed to fetch restaurants',
-        type: 'error'
-      });
     } finally {
       setLoading(false);
     }
@@ -211,7 +228,22 @@ const Restaurants = () => {
 
   useEffect(() => {
     fetchRestaurants();
-  }, [pageInfo.limit, pageInfo.currentPage] );
+  }, [pageInfo.limit, pageInfo.currentPage, selectedCountry] );
+
+  // Add this useEffect for fetching countries
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await getCountries();
+        if (response && response.data) {
+          setCountries(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      }
+    };
+    fetchCountries();
+  }, []);
 
 
   const columns = useMemo(
@@ -364,6 +396,18 @@ const Restaurants = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Restaurants</h1>
             <div className="flex gap-4">
+            <select
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              className="px-4 py-2 border rounded-lg focus:border-none focus:outline-none focus:ring-2 focus:ring-[#f99109] appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:0.7em] bg-[right_0.7rem_center] bg-no-repeat pr-8"
+            >
+              <option value="">All Countries</option>
+              {countries.map((country) => (
+                <option key={country.id} value={country.id}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
               <input
                 type="text"
                 value={globalFilter}
