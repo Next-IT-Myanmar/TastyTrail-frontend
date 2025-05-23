@@ -16,6 +16,7 @@ import Sliders from '../components/Sliders';
 import Setting from '../components/Setting';
 import NotFound from '../pages/NotFound';
 import Cuisines from '../components/Cuisines';
+import Subscribers from '../components/Subscribers';
 import Notification from '../components/Notification';
 
 
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/sliders",
         element: <Sliders />,
+      },
+      {
+        path: "/admin/subscribers",
+        element: <Subscribers />, 
       },
       {
         path: "/admin/notification",

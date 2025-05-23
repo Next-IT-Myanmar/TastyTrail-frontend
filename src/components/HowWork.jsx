@@ -1,6 +1,8 @@
 import React from 'react';
 import { FaUserPlus, FaGlobe, FaRoute } from 'react-icons/fa';
-import FeatureApp from '../assets/images/features_app.png';
+import FeatureApp from '../assets/images/how01.png';
+import FeatureApp2 from '../assets/images/how02.png';
+import FeatureApp3 from '../assets/images/how03.png';
 import bgImage from '../assets/images/work_bg.jpg';
 import '../index.css'
 
@@ -16,13 +18,13 @@ const HowWork = () => {
       icon: <FaGlobe className="text-2xl text-[#f99109]" />,
       title: "Choose your Country",
       description: "Using your debit card, bank account, USSD, QR Code, setup your first plan.",
-      image: FeatureApp
+      image: FeatureApp2
     },
     {
       icon: <FaRoute className="text-2xl text-[#f99109]" />,
       title: "Start food adventure",
       description: "Sit back, relax & let your money work for you all day, everyday.",
-      image: FeatureApp
+      image: FeatureApp3
     }
   ];
 
@@ -39,8 +41,8 @@ const HowWork = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-8">
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-              Start Adventuring Food Tour with <br /> MM Tasty Trail easily in 3 minutes
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
+              Start Adventuring Food Tour with MM Tasty Trail easily in 3 minutes
             </h2>
             
             <div className="space-y-6">
