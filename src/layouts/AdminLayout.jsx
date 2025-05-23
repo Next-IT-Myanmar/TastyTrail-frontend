@@ -32,8 +32,9 @@ const AdminLayout = () => {
     { icon: <FaPizzaSlice />, label: 'Cuisines', path: '/admin/cuisines' },
     { icon: <FaUtensils />, label: 'Restaurants', path: '/admin/restaurants' },
     { icon: <FaFunnelDollar />, label: 'Currencies', path: '/admin/currencies' },
-    { icon: < FaPalette/>, label: 'Special Offers', path: '/admin/sliders' },
-    { icon: < FaComments/>, label: 'Notification', path: '/admin/notification' }
+    { icon: <FaPalette/>, label: 'Special Offers', path: '/admin/sliders' },
+    { icon: <FaUser />, label: 'Subscribers', path: '/admin/subscribers' },
+    { icon: <FaComments/>, label: 'Notification', path: '/admin/notification' }
   ];
 
   return (

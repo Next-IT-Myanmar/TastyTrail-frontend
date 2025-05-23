@@ -8,6 +8,7 @@ import HowWork from './components/HowWork';
 import HomeLayout from './layouts/HomeLayout';
 import DownloadSection from './components/DownloadSection';
 import ScanQr from './components/ScanQr';
+// import ContactUs from './components/ContactUs';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
       <About />
       <HowWork />
       <Testimonial />
+      {/* <ContactUs /> */}
       {/* <ScanQr /> */}
       <DownloadSection />
       {/* <CounterTwo /> */}

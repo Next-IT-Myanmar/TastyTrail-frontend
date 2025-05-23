@@ -1,9 +1,9 @@
 // import React, { useState, useEffect } from "react";
-import headerApp from "../assets/images/header_app.png";
+import headerApp from "../assets/images/mock_home01.png";
 import appStore from "../assets/images/app_store_black01.png";
 import playStore from "../assets/images/play_store_black01.png";
 // import backgroundImage from "../assets/images/background_image.png";
-import backgroundImage from "../assets/images/home_bg.jpg";
+import backgroundImage from "../assets/images/home_bg02.jpg";
 import { FaUsers, FaDownload, FaStar, FaSmile } from 'react-icons/fa';
 import '../index.css'
 
@@ -58,10 +58,10 @@ const Home = () => {
           {/* Dark overlay for mobile */}
           {/* <div className="absolute inset-0 bg-black/20 md:bg-transparent"></div> */}
           <div className="container mx-auto px-4 relative z-10">
-            <div className="grid md:grid-cols-2 gap-8 items-center relative">
+            <div className="grid lg:grid-cols-2 gap-8 items-center relative">
               {/* Left Column */}
               {/* <div className="space-y-6 md:space-y-8 text-center md:text-left relative p-10 rounded-[10px]" style={{backgroundColor: 'rgba(255, 255, 255, 0.5)'}}> */}
-              <div className="space-y-6 md:space-y-8 text-center md:text-left relative">
+              <div className="space-y-6 pt-20 lg:space-y-8 text-center lg:text-left relative">
               {/* <div className="space-y-6 md:space-y-8 text-center md:text-left relative p-8 rounded-3xl bg-gradient-to-br from-white/40 via-white/30 to-transparent backdrop-blur-sm shadow-lg border border-white/20"> */}
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black leading-tight">
                   Discover<br />Myanmar's Best Food Experience
@@ -69,7 +69,7 @@ const Home = () => {
                 <p className="text-base sm:text-lg text-black font-semibold text-2xl max-w-xl mx-auto md:mx-0 p-4 md:p-0 rounded-lg md:rounded-none backdrop-blur-sm md:backdrop-blur-none bg-white/30 md:bg-transparent">
                   Explore authentic Myanmar restaurants, cafes, and street food. Your ultimate guide to local flavors.
                 </p>
-                <div className="flex flex-wrap justify-center md:justify-start gap-7 mt-[70px]">
+                <div className="flex flex-wrap justify-center lg:justify-start gap-7 mt-[70px]">
                   {/* <button className="transition-transform hover:scale-105">
                     <img src={appStore} alt="Download on App Store" className="h-28 sm:h-30 md:h-34" />
                   </button>
@@ -165,7 +165,7 @@ const Home = () => {
               </div>
 
               {/* Right Column - App Image */}
-              <div className="flex justify-center mt-8 md:mt-0 relative">
+              <div className="flex justify-center mt-8 pt-20 lg:mt-0 relative">
                 {/* Confetti effect */}
                 {/* <div className="absolute inset-0 w-full h-full">
                   <div className="absolute inset-0 bg-gradient-radial from-yellow-200/30 to-transparent"></div>
@@ -182,7 +182,7 @@ const Home = () => {
                 <img
                   src={headerApp}
                   alt="App Interface"
-                  className="pt-20 max-w-[70%] sm:max-w-[60%] md:max-w-[80%] h-auto drop-shadow-2xl hover:scale-105 transition-all duration-500 relative z-10"
+                  className="max-w-[100%] h-[200px] xs:h-[300px] sm:h-[400px] lg:h-[500px] drop-shadow-2xl hover:scale-105 transition-all duration-500 relative z-10"
                 />
               </div>
             </div>

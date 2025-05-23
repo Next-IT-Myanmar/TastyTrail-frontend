@@ -1,5 +1,5 @@
 import React from 'react';
-import aboutImage from '../assets/images/about_nobg.png';
+import aboutImage from '../assets/images/phone_mockup_02.png';
 import { FaCheck } from 'react-icons/fa';
 import '../index.css';
 
@@ -12,7 +12,9 @@ const About = () => {
   ];
 
   return (
-    <section id='about' className="py-20">
+    <section id='about' className="py-20" style={{
+      background: 'linear-gradient(to bottom, #ededed 6%, #ededed 6%, #f6f6f6 53%, #ffffff 87%, #ffffff 100%)'
+    }}>
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Column - Image */}
@@ -22,14 +24,14 @@ const About = () => {
             <img 
               src={aboutImage} 
               alt="About MM Tasty" 
-              className="relative z-10 w-[60%] max-w-lg h-auto rounded-3xl hover:scale-105 transition-transform duration-500"
+              className="relative z-10 w-[100%] max-w-lg h-auto rounded-3xl hover:scale-105 transition-transform duration-500"
             />
           </div>
 
           {/* Right Column - Content */}
           <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-              Discover Amazing Food <br />
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
+              Discover Amazing Food
               Experiences with MM Tasty Trail
             </h2>
             
@@ -49,9 +51,9 @@ const About = () => {
               ))}
             </div>
 
-            <button className="mt-8 bg-[#f99109] text-white px-8 py-3 rounded-full font-semibold hover:bg-yellow-600 transition-colors duration-300">
+            {/* <button className="mt-8 bg-[#f99109] text-white px-8 py-3 rounded-full font-semibold hover:bg-yellow-600 transition-colors duration-300">
               Learn More
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

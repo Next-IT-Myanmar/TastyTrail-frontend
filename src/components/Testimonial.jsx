@@ -87,7 +87,9 @@ const Testimonial = () => {
   };
 
   return (
-    <section id='testimonial' className="py-20">
+    <section id='testimonial' className="py-20" style={{
+      background: 'linear-gradient(to bottom, #ededed 6%, #ededed 6%, #f6f6f6 53%, #ffffff 87%, #ffffff 100%)'
+    }}>
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">

@@ -32,8 +32,8 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? ' bg-white shadow-md' : 'text-white'
+    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 bg-white ${
+      isScrolled ? 'shadow-md' : ''
     }`}>
       <div className="container mx-auto px-4 py-2">
         <nav className="flex items-center justify-between">
@@ -53,7 +53,7 @@ const Header = () => {
           </div> */}
 
         {/* // Update Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden xl:flex items-center space-x-8">
             <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="text-gray-700 hover:text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Home</a>
             <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-gray-700 hover:text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Feature</a>
             <a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-gray-700 hover:text-[#f99109] font-[600] text-[16px] transition-colors duration-300">About</a>
@@ -63,7 +63,7 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="xl:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -81,7 +81,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden mt-4 bg-white absolute top-11 left-0 right-0 p-6 shadow-lg">
+          <div className="xl:hidden mt-4 bg-white absolute top-11 left-0 right-0 p-6 shadow-lg">
             <div className="flex flex-col space-y-4">
               <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="hover:text-gray-700 text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Home</a>
               <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="hover:text-gray-700 text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Feature</a>
