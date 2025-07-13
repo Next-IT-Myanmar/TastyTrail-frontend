@@ -546,7 +546,7 @@ const Currencies = () => {
                 <input
                   type="number"
                   name="buy"
-                  step="0.01"
+                  step="0.0001"
                   min="0"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.buy}
@@ -576,7 +576,7 @@ const Currencies = () => {
                 <input
                   type="number"
                   name='sell'
-                  step="0.01"
+                  step="0.0001"
                   min="0"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={selectedCurrency?.sell}
