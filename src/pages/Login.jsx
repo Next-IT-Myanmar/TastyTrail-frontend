@@ -25,7 +25,6 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await loginUser(formData);
-      console.log('Login response:', response);
       
       if (response?.data?.accessToken) {
         localStorage.setItem('access_token', response.data.accessToken);

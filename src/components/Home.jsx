@@ -8,42 +8,6 @@ import { FaUsers, FaDownload, FaStar, FaSmile } from 'react-icons/fa';
 import '../index.css'
 
 const Home = () => {
-  // const [counters, setCounters] = useState({
-  //   downloads: 0,
-  //   rating: 0,
-  //   reviews: 0
-  // });
-
-  // useEffect(() => {
-  //   const targets = {
-  //     downloads: 25000,
-  //     rating: 4.8,
-  //     reviews: 1200
-  //   };
-
-  //   Object.entries(targets).forEach(([key, target]) => {
-  //     const steps = 50;
-  //     const increment = key === 'rating' ? target / steps : Math.floor(target / steps);
-  //     let current = 0;
-
-  //     const timer = setInterval(() => {
-  //       if (current >= target) {
-  //         clearInterval(timer);
-  //         return;
-  //       }
-
-  //       current += increment;
-  //       setCounters(prev => ({
-  //         ...prev,
-  //         [key]: key === 'rating'
-  //           ? Number(Math.min(current, target).toFixed(1))
-  //           : Math.floor(Math.min(current, target))
-  //       }));
-  //     }, 40);
-
-  //     return () => clearInterval(timer);
-  //   });
-  // }, []);
 
   return (
     <section 
@@ -64,10 +28,10 @@ const Home = () => {
               <div className="space-y-6 pt-20 lg:space-y-8 text-center lg:text-left relative">
               {/* <div className="space-y-6 md:space-y-8 text-center md:text-left relative p-8 rounded-3xl bg-gradient-to-br from-white/40 via-white/30 to-transparent backdrop-blur-sm shadow-lg border border-white/20"> */}
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black leading-tight">
-                  Discover<br />Myanmar's Best Food Experience
+                  Discover<br />Myanmar Flavors Worldwide
                 </h1>
                 <p className="text-base sm:text-lg text-black font-semibold text-2xl max-w-xl mx-auto md:mx-0 p-4 md:p-0 rounded-lg md:rounded-none backdrop-blur-sm md:backdrop-blur-none bg-white/30 md:bg-transparent">
-                  Explore authentic Myanmar restaurants, cafes, and street food. Your ultimate guide to local flavors.
+                  Explore authentic Myanmar Foods <br /> no matter where you are.
                 </p>
                 <div className="flex flex-wrap justify-center lg:justify-start gap-7 mt-[70px]">
                   {/* <button className="transition-transform hover:scale-105">
@@ -83,85 +47,6 @@ const Home = () => {
                     <img src={playStore} alt="Get it on Play Store" className="h-10 sm:h-12 md:h-14" />
                   </div>
                 </div>
-
-                {/* Counter Section with Custom Shape */}
-                {/* <div className="relative mt-12 md:mt-20">
-                  <div className="absolute inset-0 bg-yellow-400"
-                    style={{
-                      clipPath: 'rect(50px 70px 80% 20%)'
-                    }}
-                  ></div>
-                  <div className="relative z-10 py-8 px-4">
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <div className="text-2xl md:text-3xl font-bold text-white mb-2">
-                          {counters.downloads}+
-                        </div>
-                        <div className="text-white font-medium text-sm">
-                          Downloads
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-2xl md:text-3xl font-bold text-white mb-2">
-                          {counters.rating}
-                        </div>
-                        <div className="text-white font-medium text-sm">
-                          Rating
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-2xl md:text-3xl font-bold text-white mb-2">
-                          {counters.reviews}+
-                        </div>
-                        <div className="text-white font-medium text-sm">
-                          Reviews
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="relative mt-12 md:mt-20">
-                  <div className="relative z-10 py-8 px-4">
-                    <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                      <div className="text-center">
-                        <div className="text-xl sm:text-xl mb-4 flex justify-center">
-                          <FaDownload className="text-yellow-500 text-xl sm:text-2xl hover:scale-110 transition-transform" /> 
-                        </div>
-                        <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-500 mb-2">
-                          {counters.downloads}+
-                        </div>
-                        <div className="text-yellow-500 font-medium text-xs sm:text-sm md:text-base">
-                          Downloads
-                        </div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="text-xl sm:text-xl mb-4 flex justify-center">
-                          <FaStar className="text-yellow-500 text-xl sm:text-2xl hover:scale-110 transition-transform" /> 
-                        </div>
-                        <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-500 mb-2">
-                          {counters.rating}
-                        </div>
-                        <div className="text-yellow-500 font-medium text-xs sm:text-sm md:text-base">
-                          Rating
-                        </div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="text-xl sm:text-xl mb-4 flex justify-center">
-                          <FaSmile className="text-yellow-500 text-xl sm:text-2xl hover:scale-110 transition-transform" /> 
-                        </div>
-                        <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-500 mb-2">
-                          {counters.reviews}+
-                        </div>
-                        <div className="text-yellow-500 font-medium text-xs sm:text-sm md:text-base">
-                          Reviews
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
               </div>
 
               {/* Right Column - App Image */}

@@ -10,8 +10,6 @@ const ContactUs = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log(formData);
   };
 
   const handleChange = (e) => {

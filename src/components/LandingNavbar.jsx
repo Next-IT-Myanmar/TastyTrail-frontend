@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/images/origin_logo.png";
 import '../index.css'
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +26,10 @@ const Header = () => {
   // Add this function after the useEffect hook
   const handleScroll = (e, targetId) => {
     e.preventDefault();
+    if(!isHomePage){
+      window.location.href = `/#${targetId}`;
+      return;
+    }
     const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -43,16 +49,7 @@ const Header = () => {
             <span className="text-xl font-semibold text-red-700 ">MM Tasty Trail</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          {/* <div className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-gray-700 hover:text-blue-500 font-[600] text-[16px]">Home</a>
-            <a href="#feature" className="text-gray-700 hover:text-blue-500 font-[600] text-[16px]">Feature</a>
-            <a href="#about" className="text-gray-700 hover:text-blue-500 font-[600] text-[16px]">About</a>
-            <a href="#howwork" className="text-gray-700 hover:text-blue-500 font-[600] text-[16px]">How It Work</a>
-            <a href="#testimonial" className="text-gray-700 hover:text-blue-500 font-[600] text-[16px]">Testimonials</a>
-          </div> */}
-
-        {/* // Update Desktop Navigation */}
+        {/* // Desktop Navigation */}
           <div className="hidden xl:flex items-center space-x-8">
             <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="text-gray-700 hover:text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Home</a>
             <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-gray-700 hover:text-[#f99109] font-[600] text-[16px] transition-colors duration-300">Feature</a>
@@ -92,15 +89,6 @@ const Header = () => {
             </div>
           </div>
         )}
-
-      {/* // Update Mobile Navigation */}
-        {/* <div className="flex flex-col space-y-4">
-          <a href="#home" onClick={(e) => handleScroll(e, 'home')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Home</a>
-          <a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Feature</a>
-          <a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">About</a>
-          <a href="#howwork" onClick={(e) => handleScroll(e, 'howwork')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">How It Work</a>
-          <a href="#testimonial" onClick={(e) => handleScroll(e, 'testimonial')} className="text-gray-700 hover:text-yellow-500 font-[600] text-[16px] transition-colors duration-300">Testimonials</a>
-        </div> */}
       </div>
     </header>
   );

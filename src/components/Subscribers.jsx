@@ -18,7 +18,6 @@ const Subscribers = () => {
         try {
             setLoading(true);
             const response = await getLetterSubscriptions(page, pagination.itemsPerPage);
-            console.log('Response from API:', response);
             
             if (!response || !response.data) {
                 setError('No data received from server');

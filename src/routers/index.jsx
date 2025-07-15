@@ -18,17 +18,11 @@ import NotFound from '../pages/NotFound';
 import Cuisines from '../components/Cuisines';
 import Subscribers from '../components/Subscribers';
 import Notification from '../components/Notification';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
+import TermsCondition from '../pages/TermsCondition';
 
 
 const router = createBrowserRouter([
-  // {
-  //   path: "/",
-  //   element: <App />,
-  // },
-  // {
-  //   path: "/login",
-  //   element: <Login />,
-  // }
   {
     path: "/",
     Component: HomeLayout,
@@ -36,6 +30,14 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <App />,
+      },
+      {
+        path: "/privacy-policy",
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: "/terms-conditions",
+        element: <TermsCondition />,
       },
       {
         path: "*",

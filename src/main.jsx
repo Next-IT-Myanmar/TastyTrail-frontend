@@ -25,4 +25,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <RouterProvider router={router} />
   </Provider>
 );
-// Compare this snippet from index.jsx:
