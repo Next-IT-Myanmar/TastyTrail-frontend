@@ -77,7 +77,6 @@ const Cuisines = () => {
       let response;
       if (modalMode === 'edit') {
         response = await updateCuisine(selectedCuisine.id, formDataToSend);
-        console.log('Updated Cuisine:', response.data);
         // Update the categories list with the updated item
         setCuisines(prev => prev.map(cuisine => 
           cuisine.id === response.data.id ? response : cuisine
@@ -447,21 +446,6 @@ const Cuisines = () => {
           >
             Previous
           </button>
-          
-          {/* Numbered Pagination */}
-          {/* {Array.from({ length: table.getPageCount() }, (_, i) => i + 1).map((pageNumber) => (
-            <button
-              key={pageNumber}
-              onClick={() => table.setPageIndex(pageNumber - 1)}
-              className={`px-3 py-1 border rounded-lg ${
-                table.getState().pagination.pageIndex === pageNumber - 1
-                  ? 'bg-yellow-500 text-white'
-                  : 'hover:bg-gray-50'
-              }`}
-            >
-              {pageNumber}
-            </button>
-          ))} */}
 
           {/* Numbered Pagination with Ellipsis */}
           {(() => {

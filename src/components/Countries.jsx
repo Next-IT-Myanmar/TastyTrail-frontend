@@ -489,21 +489,6 @@ const Countries = () => {
           Previous
         </button>
           
-          {/* Numbered Pagination */}
-          {/* {Array.from({ length: table.getPageCount() }, (_, i) => i + 1).map((pageNumber) => (
-            <button
-              key={pageNumber}
-              onClick={() => table.setPageIndex(pageNumber - 1)}
-              className={`px-3 py-1 border rounded-lg ${
-                table.getState().pagination.pageIndex === pageNumber - 1
-                  ? 'bg-yellow-500 text-white'
-                  : 'hover:bg-gray-50'
-              }`}
-            >
-              {pageNumber}
-            </button>
-          ))} */}
-
           {/* Numbered Pagination with Ellipsis */}
           {(() => {
             const totalItems = pageInfo.total ?? 0;

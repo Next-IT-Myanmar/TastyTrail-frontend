@@ -231,39 +231,6 @@ const Categories = () => {
     }
   };
 
-  // Fetch categories function
-  // const fetchCategories = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await getCategories(pageInfo.currentPage, pageInfo.limit);
-      
-  //     if (Array.isArray(response.data)) {
-  //       // Sort the array in descending order by id
-  //       const sortedData = [...response.data].sort((a, b) => b.id - a.id);
-  //       setCategories(sortedData);
-        
-  //       // Update pagination info with the total count from the API
-  //       const totalCount = response.total || response.data.length;
-  //       setPageInfo(prev => ({
-  //         ...prev,
-  //         total: totalCount,
-  //         totalPages: Math.ceil(totalCount / prev.limit),
-  //         currentPage: prev.currentPage > Math.ceil(totalCount / prev.limit)
-  //           ? Math.ceil(totalCount / prev.limit) 
-  //           : prev.currentPage
-  //       }));
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch error:', error);
-  //     setMessage({
-  //       text: error.response?.message || 'Failed to fetch categories',
-  //       type: 'error'
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   // Add useEffect for auto-dismissing notifications
   useEffect(() => {
     if (message.text) {
@@ -298,7 +265,6 @@ const Categories = () => {
         accessorKey: 'img',
         cell: ({ row }) => {
           const imageUrl = row.original.img || row.original.image;
-          // console.log("image url", import.meta.env.VITE_API_BASE_URL+"/"+imageUrl);
           
           
           return (
@@ -520,21 +486,6 @@ const Categories = () => {
             Previous
           </button>
           
-          {/* Numbered Pagination */}
-          {/* {Array.from({ length: table.getPageCount() }, (_, i) => i + 1).map((pageNumber) => (
-            <button
-              key={pageNumber}
-              onClick={() => table.setPageIndex(pageNumber - 1)}
-              className={`px-3 py-1 border rounded-lg ${
-                table.getState().pagination.pageIndex === pageNumber - 1
-                  ? 'bg-yellow-500 text-white'
-                  : 'hover:bg-gray-50'
-              }`}
-            >
-              {pageNumber}
-            </button>
-          ))} */}
-
           {/* Numbered Pagination with Ellipsis */}
           {(() => {
             // Calculate totalPages based on total items and limit
@@ -545,12 +496,6 @@ const Categories = () => {
             const pageNumbers = [];
 
             if (totalPages === 0) return null; // Nothing to render
-
-            console.log("totalItems", totalItems);
-            console.log("itemsPerPage", itemsPerPage);
-            console.log("totalPages", totalPages);
-            console.log("currentPage", currentPage);
-            console.log("pageNumbers", pageNumbers);
             
             if (totalPages <= 7) {
               // Show all pages if total pages are 7 or less

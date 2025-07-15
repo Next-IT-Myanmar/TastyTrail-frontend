@@ -1,7 +1,7 @@
 import React from "react";
 import featuresApp from "../assets/images/mock01.png";
 import bgImage from "../assets/images/feature_bg.jpg";
-import { FaCoffee, FaHamburger, FaUtensils, FaShoppingBag } from 'react-icons/fa';
+import { FaCoffee, FaHamburger, FaUtensils, FaMapMarkerAlt } from 'react-icons/fa';
 import '../index.css'
 
 const Feature = () => {
@@ -19,7 +19,7 @@ const Feature = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Amazing App Features</h2>
               <p className="text-black/80 max-w-2xl mx-auto">
-                Discover the best features of MM Tasty app that help you explore Myanmar's diverse culinary scene, from local restaurants to street food favorites.
+                Discover the best features of MM Tasty Trail app to help you to explore the authentic Myanmar Food.
               </p>
             </div>
 
@@ -71,11 +71,11 @@ const Feature = () => {
                 </div>
                 <div className="flex flex-col items-center md:items-start text-center md:text-left">
                   <div className="bg-[#faebd7] p-4 rounded-[20px] mb-4 transform transition-all hover:scale-110">
-                    <FaShoppingBag className="text-xl text-[#f99109]" />
+                    <FaMapMarkerAlt className="text-xl text-[#f99109]" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Food Delivery</h3>
+                  <h3 className="text-xl font-semibold mb-2">Where are you?</h3>
                   <p className="text-gray-600 max-w-sm">
-                  Get your favorite Myanmar dishes delivered right to your doorstep. Fast, reliable delivery service for both traditional and modern cuisine.
+                    Easy to find wherever you are. 
                   </p>
                 </div>
               </div>

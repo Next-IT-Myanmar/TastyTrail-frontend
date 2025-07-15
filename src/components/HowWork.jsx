@@ -9,21 +9,18 @@ import '../index.css'
 const HowWork = () => {
   const steps = [
     {
-      icon: <FaUserPlus className="text-2xl text-[#f99109]" />,
-      title: "Create an account",
-      description: "Sign up for an account with your name, email and phone number.",
-      image: FeatureApp
+      image: FeatureApp,
     },
     {
       icon: <FaGlobe className="text-2xl text-[#f99109]" />,
       title: "Choose your Country",
-      description: "Using your debit card, bank account, USSD, QR Code, setup your first plan.",
+      description: "Choose a country to explore Myanmar restaurants and foods available there.",
       image: FeatureApp2
     },
     {
       icon: <FaRoute className="text-2xl text-[#f99109]" />,
-      title: "Start food adventure",
-      description: "Sit back, relax & let your money work for you all day, everyday.",
+      title: "Start a food adventure.",
+      description: "Sit back, relax & start exploring according to your curving",
       image: FeatureApp3
     }
   ];
@@ -42,7 +39,7 @@ const HowWork = () => {
           {/* Left Column - Text Content */}
           <div className="space-y-8">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
-              Start Adventuring Food Tour with MM Tasty Trail easily in 3 minutes
+              Start Adventuring Food Tour with MM Tasty Trail easily in 2 steps
             </h2>
             
             <div className="space-y-6">

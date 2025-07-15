@@ -15,7 +15,6 @@ function App() {
   return (
     <div>
       <Home />
-      {/* <Counter /> */}
       <Feature />
       <About />
       <HowWork />
@@ -23,7 +22,6 @@ function App() {
       {/* <ContactUs /> */}
       {/* <ScanQr /> */}
       <DownloadSection />
-      {/* <CounterTwo /> */}
     </div>
   )
 }

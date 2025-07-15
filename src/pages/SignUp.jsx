@@ -55,16 +55,13 @@ const SignUp = () => {
      };
 
      //Register user
-     console.log('Sending registration request:', requestBody);
      const response = await registerUser(requestBody);
-     console.log('Registration successful:', response.data);
 
      // Redirect to login page
      navigate('/login');
     } catch (error) {
      setError(error.response?.data?.message || 'Registration failed.Please try again.'); 
     }
-    console.log('Form data:', formData);
   };
 
   return (

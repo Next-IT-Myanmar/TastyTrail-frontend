@@ -499,12 +499,6 @@ const Restaurants = () => {
             const pageNumbers = [];
 
             if (totalPages === 0) return null; // Nothing to render
-
-            console.log("totalItems", totalItems);
-            console.log("itemsPerPage", itemsPerPage);
-            console.log("totalPages", totalPages);
-            console.log("currentPage", currentPage);
-            console.log("pageNumbers", pageNumbers);
             
             if (totalPages <= 7) {
               // Show all pages if total pages are 7 or less

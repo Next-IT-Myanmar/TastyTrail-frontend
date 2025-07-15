@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaHeart } from 'react-icons/fa';
 import { subscribeNewLetter } from '../services/letterService';
 import logo from '../assets/images/origin_logo.png';
@@ -8,6 +9,20 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState({ type: '', message: '' });
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
+  const handleScroll = (e, targetId) => {
+    e.preventDefault();
+    if (!isHomePage) {
+      window.location.href = `/#${targetId}`;
+      return;
+    }
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleSubscribe = async (e ) => {
     e.preventDefault();
@@ -34,7 +49,7 @@ const Footer = () => {
               Discover amazing food experiences and connect with fellow food lovers around the world.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="bg-gray-800 p-2 rounded-full hover:bg-[#ef9910] transition-colors">
+              <a href="https://www.facebook.com/mmtastytrail" className="bg-gray-800 p-2 rounded-full hover:bg-[#ef9910] transition-colors">
                 <FaFacebookF />
               </a>
               <a href="#" className="bg-gray-800 p-2 rounded-full hover:bg-[#ef9910] transition-colors">
@@ -53,9 +68,9 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">About Us</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">Our Services</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">How It Works</a></li>
+              <li><a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-gray-400 hover:text-[#ef9910]">About Us</a></li>
+              <li><a href="#feature" onClick={(e) => handleScroll(e, 'feature')} className="text-gray-400 hover:text-[#ef9910]">Our Services</a></li>
+              <li><a href="#howwork" onClick={(e) => handleScroll(e, 'howwork')} className="text-gray-400 hover:text-[#ef9910]">How It Works</a></li>
               {/* <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">Support</a></li> */}
             </ul>
           </div>
@@ -65,8 +80,8 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               {/* <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">Help Center</a></li> */}
-              <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">Privacy Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">Terms & Conditions</a></li>
+              <li><Link to="/privacy-policy" className="text-gray-400 hover:text-[#ef9910]">Privacy Policy</Link></li>
+              <li><Link to="/terms-conditions" className="text-gray-400 hover:text-[#ef9910]">Terms & Conditions</Link></li>
               {/* <li><a href="#" className="text-gray-400 hover:text-[#ef9910]">Contact Us</a></li> */}
             </ul>
           </div>
