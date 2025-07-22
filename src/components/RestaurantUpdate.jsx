@@ -7,6 +7,8 @@ import { updateRestaurant, getRestaurantLists } from '../services/restaurantServ
 import { getCategories } from '../services/categoryService';
 import { getCountries } from '../services/countryService';
 import { getCuisines } from '../services/cuisineService';
+import { TimePicker } from 'react-accessible-time-picker';
+import moment from 'moment';
  
 const RestaurantUpdateModal = ({ restaurant, onClose }) => {
   const [socialLinksCount, setSocialLinksCount] = useState(restaurant?.socialLinks?.length || 1);
@@ -43,6 +45,31 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+
+
+  const convert24HourToPicker = (timeStr) => {
+    if (!timeStr) return { hour: '', minute: '', period: 'AM' };
+
+    const [hourStr, minute] = timeStr.split(':');
+    let hour = parseInt(hourStr, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+
+    if (hour === 0) hour = 12;
+    else if (hour > 12) hour -= 12;
+
+    return {
+      hour: hour.toString().padStart(2, '0'),
+      minute: minute.padStart(2, '0'),
+      period
+    };
+  };
+
+  const [openTime, setOpenTime] = useState(() => {
+    return convert24HourToPicker(restaurant?.openHour || '');
+  });
+  const [closeTime, setCloseTime] = useState(() => {
+    return convert24HourToPicker(restaurant?.closeHour || '');
+  });
 
   const handleCuisinesSelect = (option) => {
     setSelectedCuisines([...selectedCuisines, option]);
@@ -160,6 +187,21 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
     setAdditionalImagesCount(prev => Math.max(1, prev - 1));
   };
 
+  const formatTimeTo24Hour = ({ hour, minute, period }) => {
+    if (!hour || !minute || !period) return '';
+
+    let h = parseInt(hour, 10);
+    const m = minute.padStart(2, '0');
+
+    if (period === 'PM' && h !== 12) {
+      h += 12;
+    } else if (period === 'AM' && h === 12) {
+      h = 0;
+    }
+
+    return `${h.toString().padStart(2, '0')}:${m}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({ categories: false, countries: false, cuisines: false });
@@ -193,8 +235,8 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
       formData.append('priceRange', priceRate);
       formData.append('promoRate', promotion);
       formData.append('isPromotion', promotion > 0 ? 'true' : 'false');
-      formData.append('openHour', e.target.elements.openHour.value);
-      formData.append('closeHour', e.target.elements.closeHour.value);
+      formData.append('openHour', formatTimeTo24Hour(openTime));
+      formData.append('closeHour', formatTimeTo24Hour(closeTime));
 
       // Handle phone numbers
       const phoneNumbers = Array.from(e.target.elements)
@@ -506,14 +548,11 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
             {Array.from({ length: phoneCount }).map((_, index) => (
               <div key={index} className="flex gap-2 mb-2">
                 <input
-                  type="tel"
                   name={`phones[${index}]`}
-                  pattern="[0-9\-\+]{1,20}"
-                  maxLength={20}
                   className="flex-1 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   defaultValue={restaurant?.phones?.[index]}
                   required={index === 0}
-                  placeholder="Enter phone number (e.g., +1234567890)"
+                  placeholder="Enter phone number"
                   onKeyDown={(e) => {
                     if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'].includes(e.key)) return;
                     if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) return;
@@ -539,25 +578,41 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
               <label className="block text-sm font-medium text-gray-700">Opening Hour
                 <span className="text-red-500">*</span>
               </label>
-              <input
-                type="time"
-                name="openHour"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                defaultValue={restaurant?.openHour}
-                required
-              />
+              <div
+                className="mt-2"
+                style={{
+                  '--time-focus-border': '#f99109',
+                  '--time-focus-ring': '0 0 0 5px rgba(249,145,9,0.4)',
+                  '--time-border': '#d1d5db', // optional: gray-300
+                }}
+              >
+                <TimePicker
+                  value={openTime} 
+                  onChange={setOpenTime}
+                  is24Hour={false}
+                  required
+                />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Closing Hour
                 <span className="text-red-500">*</span>
               </label>
-              <input
-                type="time"
-                name="closeHour"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                defaultValue={restaurant?.closeHour}
-                required
-              />
+              <div
+                className="mt-2"
+                style={{
+                  '--time-focus-border': '#f99109',
+                  '--time-focus-ring': '0 0 0 3px rgba(249,145,9,0.4)',
+                  '--time-border': '#d1d5db', // optional: gray-300
+                }}
+              >
+                <TimePicker
+                  value={closeTime} 
+                  onChange={setCloseTime}
+                  is24Hour={false}
+                  required
+                />
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
