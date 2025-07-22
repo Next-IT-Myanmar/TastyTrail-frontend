@@ -4,6 +4,10 @@ import { createRestaurant , getRestaurantLists } from '../services/restaurantSer
 import { getCategories } from '../services/categoryService';
 import { getCountries } from '../services/countryService';
 import { getCuisines } from '../services/cuisineService';
+import { TimePicker } from 'react-accessible-time-picker';
+import moment from 'moment';
+
+
 const RestaurantCreateModal = ({ onClose }) => {
   const [errors, setErrors] = useState({
     categories: false,
@@ -44,6 +48,8 @@ const RestaurantCreateModal = ({ onClose }) => {
     countries: false,
     cuisines: false
   });
+  const [openTime, setOpenTime] = useState({ hour: '', minute: '', period: 'AM' });
+  const [closeTime, setCloseTime] = useState({ hour: '', minute: '', period: 'AM' });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -284,6 +290,22 @@ const RestaurantCreateModal = ({ onClose }) => {
     setSelectedCountries(selectedCountries.filter(item => item.id!== optionToRemove.id));
   };
 
+  const formatTimeTo24Hour = ({ hour, minute, period }) => {
+  if (!hour || !minute || !period) return '';
+
+  let h = parseInt(hour, 10);
+  const m = minute.padStart(2, '0');
+
+  if (period === 'PM' && h !== 12) {
+    h += 12;
+  } else if (period === 'AM' && h === 12) {
+    h = 0;
+  }
+
+  return `${h.toString().padStart(2, '0')}:${m}`;
+};
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -323,8 +345,8 @@ const RestaurantCreateModal = ({ onClose }) => {
         phones: phoneNumbers.filter(phone => phone.trim() !== ''), // Changed from phoneNumber
         address: e.target.address.value,
         map: e.target.map.value,
-        openHour: e.target.openHour.value,
-        closeHour: e.target.closeHour.value,
+        openHour: formatTimeTo24Hour(openTime),
+        closeHour: formatTimeTo24Hour(closeTime),
         rank: rating,
         priceRange: priceRate,
         isPromotion: e.target.promotion?.value > 0,
@@ -450,15 +472,12 @@ const RestaurantCreateModal = ({ onClose }) => {
             {phoneNumbers.map((phone, index) => (
               <div key={index} className="flex gap-2 mb-2">
                 <input
-                  type="tel"
                   name={`phoneNumber${index}`}
                   value={phone}
                   onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
-                  pattern="[0-9\-]{1,20}"
-                  maxLength={20}
                   className="flex-1 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   required={index === 0}
-                  placeholder="Enter phone number (numbers only)"
+                  placeholder="Enter phone number"
                 />
                 {index !== 0 && (
                   <button
@@ -492,26 +511,44 @@ const RestaurantCreateModal = ({ onClose }) => {
           {/* Operating Hours */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Opening Hour
+              <label className="mb-1 block text-sm font-medium text-gray-700">Opening Hour
                 <span className="text-red-500">*</span>
               </label>
-              <input
-                name="openHour"
-                type="time"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                required
-              />
+              <div
+                className="mt-2"
+                style={{
+                  '--time-focus-border': '#f99109',
+                  '--time-focus-ring': '0 0 0 5px rgba(249,145,9,0.4)',
+                  '--time-border': '#d1d5db', // optional: gray-300
+                }}
+              >
+                <TimePicker
+                  value={openTime} 
+                  onChange={setOpenTime}
+                  is24Hour={false}
+                  required
+                />
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Closing Hour
+              <label className="mb-1 block text-sm font-medium text-gray-700">Closing Hour
                 <span className="text-red-500">*</span>
               </label>
-              <input
-                type="time"
-                name="closeHour"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
-                required
-              />
+              <div
+                className="mt-2"
+                style={{
+                  '--time-focus-border': '#f99109',
+                  '--time-focus-ring': '0 0 0 3px rgba(249,145,9,0.4)',
+                  '--time-border': '#d1d5db', // optional: gray-300
+                }}
+              >
+                <TimePicker
+                  value={closeTime} 
+                  onChange={setCloseTime}
+                  is24Hour={false}
+                  required
+                />
+              </div>
             </div>
           </div>
 
