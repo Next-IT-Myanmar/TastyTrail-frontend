@@ -125,7 +125,6 @@ const Categories = () => {
       let response;
       if (modalMode === 'edit') {
         response = await updateCategory(selectedCategory.id, formDataToSend);
-        console.log("Update response", response)
         // Update the categories list with the updated item
         setCategories(prev => prev.map(cat => 
           cat.id === selectedCategory.id ? response : cat
