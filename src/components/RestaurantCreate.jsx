@@ -5,6 +5,8 @@ import { getCategories } from '../services/categoryService';
 import { getCountries } from '../services/countryService';
 import { getCuisines } from '../services/cuisineService';
 import { TimePicker } from 'react-accessible-time-picker';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 import moment from 'moment';
 
 
@@ -415,10 +417,7 @@ const RestaurantCreateModal = ({ onClose }) => {
     <div className="w-full">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Add New Restaurant</h1>
-        <button
-          onClick={onClose}
-          className="text-gray-600 hover:text-gray-800"
-        >
+        <button onClick={onClose} className="text-gray-600 hover:text-gray-800">
           Back to List
         </button>
       </div>
@@ -427,7 +426,8 @@ const RestaurantCreateModal = ({ onClose }) => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Name
+              <label className="block text-sm font-medium text-gray-700">
+                Name
                 <span className="text-red-500">*</span>
               </label>
               <input
@@ -438,13 +438,16 @@ const RestaurantCreateModal = ({ onClose }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 pb-3">Rank</label>
+              <label className="block text-sm font-medium text-gray-700 pb-3">
+                Rank
+              </label>
               <StarRating value={rating} onChange={setRating} />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Description
+            <label className="block text-sm font-medium text-gray-700">
+              Description
               <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -458,7 +461,8 @@ const RestaurantCreateModal = ({ onClose }) => {
           {/*  Update the phone number section in the form */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">Phone Number
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number
                 <span className="text-red-500">*</span>
               </label>
               <button
@@ -474,7 +478,9 @@ const RestaurantCreateModal = ({ onClose }) => {
                 <input
                   name={`phoneNumber${index}`}
                   value={phone}
-                  onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handlePhoneNumberChange(index, e.target.value)
+                  }
                   className="flex-1 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f99109] focus:border-[#f99109] px-4 py-2"
                   required={index === 0}
                   placeholder="Enter phone number"
@@ -511,19 +517,20 @@ const RestaurantCreateModal = ({ onClose }) => {
           {/* Operating Hours */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Opening Hour
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Opening Hour
                 <span className="text-red-500">*</span>
               </label>
               <div
                 className="mt-2"
                 style={{
-                  '--time-focus-border': '#f99109',
-                  '--time-focus-ring': '0 0 0 5px rgba(249,145,9,0.4)',
-                  '--time-border': '#d1d5db', // optional: gray-300
+                  "--time-focus-border": "#f99109",
+                  "--time-focus-ring": "0 0 0 5px rgba(249,145,9,0.4)",
+                  "--time-border": "#d1d5db", // optional: gray-300
                 }}
               >
                 <TimePicker
-                  value={openTime} 
+                  value={openTime}
                   onChange={setOpenTime}
                   is24Hour={false}
                   required
@@ -531,19 +538,20 @@ const RestaurantCreateModal = ({ onClose }) => {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Closing Hour
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Closing Hour
                 <span className="text-red-500">*</span>
               </label>
               <div
                 className="mt-2"
                 style={{
-                  '--time-focus-border': '#f99109',
-                  '--time-focus-ring': '0 0 0 3px rgba(249,145,9,0.4)',
-                  '--time-border': '#d1d5db', // optional: gray-300
+                  "--time-focus-border": "#f99109",
+                  "--time-focus-ring": "0 0 0 3px rgba(249,145,9,0.4)",
+                  "--time-border": "#d1d5db", // optional: gray-300
                 }}
               >
                 <TimePicker
-                  value={closeTime} 
+                  value={closeTime}
                   onChange={setCloseTime}
                   is24Hour={false}
                   required
@@ -552,12 +560,13 @@ const RestaurantCreateModal = ({ onClose }) => {
             </div>
           </div>
 
-          <div>
-            </div>
+          <div></div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Promotion (%)</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Promotion (%)
+              </label>
               <input
                 type="number"
                 name="promotion"
@@ -568,20 +577,28 @@ const RestaurantCreateModal = ({ onClose }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 pb-3">Price Range</label>
+              <label className="block text-sm font-medium text-gray-700 pb-3">
+                Price Range
+              </label>
               <PriceRating value={priceRate} onChange={setPriceRate} />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Categories
+            <label className="block text-sm font-medium text-gray-700">
+              Categories
               <span className="text-red-500">*</span>
             </label>
             <div className="mt-1">
-              <div className={`relative ${errors.categories ? 'border-red-500 rounded-lg' : ''}`} ref={categoriesRef}>
+              <div
+                className={`relative ${
+                  errors.categories ? "border-red-500 rounded-lg" : ""
+                }`}
+                ref={categoriesRef}
+              >
                 {/* Selected Items */}
                 <div className="min-h-[42px] p-1 border-gray-300 border rounded-lg bg-white flex flex-wrap gap-1">
-                  {selectedCategories.map(item => (
+                  {selectedCategories.map((item) => (
                     <span
                       key={item.id}
                       className="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-sm"
@@ -595,23 +612,31 @@ const RestaurantCreateModal = ({ onClose }) => {
                       </button>
                     </span>
                   ))}
-                  
+
                   <div className="flex-1 relative">
                     <input
                       type="text"
                       className="w-full p-1 outline-none"
-                      placeholder={selectedCategories.length === 0 ? "Select options..." : ""}
+                      placeholder={
+                        selectedCategories.length === 0
+                          ? "Select options..."
+                          : ""
+                      }
                       value={categorySearchTerm}
                       onChange={(e) => setCategorySearchTerm(e.target.value)}
                       onFocus={() => setOpenCategories(true)}
                     />
                   </div>
-                  
+
                   <button
                     onClick={() => setOpenCategories(!isOpenCategories)}
                     className="self-center px-1"
                   >
-                    <FaChevronDown className={`transition-transform ${isOpenCategories ? 'rotate-180' : ''}`} />
+                    <FaChevronDown
+                      className={`transition-transform ${
+                        isOpenCategories ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                 </div>
 
@@ -619,9 +644,11 @@ const RestaurantCreateModal = ({ onClose }) => {
                 {isOpenCategories && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
                     {filteredCategoriesOptions.length === 0 ? (
-                      <div className="p-2 text-gray-500 text-center">No options found</div>
+                      <div className="p-2 text-gray-500 text-center">
+                        No options found
+                      </div>
                     ) : (
-                      filteredCategoriesOptions.map(option => (
+                      filteredCategoriesOptions.map((option) => (
                         <button
                           key={option.id}
                           className="w-full px-4 py-2 text-left hover:bg-yellow-50 focus:bg-yellow-50 focus:outline-none"
@@ -635,20 +662,28 @@ const RestaurantCreateModal = ({ onClose }) => {
                 )}
               </div>
               {errors.categories && (
-                <p className="mt-1 text-sm text-red-500">Please select at least one category</p>
+                <p className="mt-1 text-sm text-red-500">
+                  Please select at least one category
+                </p>
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Countries
+            <label className="block text-sm font-medium text-gray-700">
+              Countries
               <span className="text-red-500">*</span>
             </label>
             <div className="mt-1">
-              <div className={`relative ${errors.countries ? 'border-red-500 rounded-lg' : ''}`} ref={countriesRef}>
+              <div
+                className={`relative ${
+                  errors.countries ? "border-red-500 rounded-lg" : ""
+                }`}
+                ref={countriesRef}
+              >
                 {/* Selected Items */}
                 <div className="min-h-[42px] p-1 border-gray-300 border rounded-lg bg-white flex flex-wrap gap-1">
-                  {selectedCountries.map(item => (
+                  {selectedCountries.map((item) => (
                     <span
                       key={item.id}
                       className="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-sm"
@@ -662,23 +697,31 @@ const RestaurantCreateModal = ({ onClose }) => {
                       </button>
                     </span>
                   ))}
-                  
+
                   <div className="flex-1 relative">
                     <input
                       type="text"
                       className="w-full p-1 outline-none"
-                      placeholder={selectedCountries.length === 0 ? "Select options..." : ""}
+                      placeholder={
+                        selectedCountries.length === 0
+                          ? "Select options..."
+                          : ""
+                      }
                       value={countrySearchTerm}
                       onChange={(e) => setCountrySearchTerm(e.target.value)}
                       onFocus={() => setOpenCountries(true)}
                     />
                   </div>
-                  
+
                   <button
                     onClick={() => setOpenCountries(!isOpenCountries)}
                     className="self-center px-1"
                   >
-                    <FaChevronDown className={`transition-transform ${isOpenCountries ? 'rotate-180' : ''}`} />
+                    <FaChevronDown
+                      className={`transition-transform ${
+                        isOpenCountries ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                 </div>
 
@@ -686,9 +729,11 @@ const RestaurantCreateModal = ({ onClose }) => {
                 {isOpenCountries && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
                     {filteredCountriesOptions.length === 0 ? (
-                      <div className="p-2 text-gray-500 text-center">No options found</div>
+                      <div className="p-2 text-gray-500 text-center">
+                        No options found
+                      </div>
                     ) : (
-                      filteredCountriesOptions.map(option => (
+                      filteredCountriesOptions.map((option) => (
                         <button
                           key={option.id}
                           className="w-full px-4 py-2 text-left hover:bg-yellow-50 focus:bg-yellow-50 focus:outline-none"
@@ -702,20 +747,28 @@ const RestaurantCreateModal = ({ onClose }) => {
                 )}
               </div>
               {errors.countries && (
-                <p className="mt-1 text-sm text-red-500">Please select at least one country</p>
+                <p className="mt-1 text-sm text-red-500">
+                  Please select at least one country
+                </p>
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Cuisines
+            <label className="block text-sm font-medium text-gray-700">
+              Cuisines
               <span className="text-red-500">*</span>
             </label>
             <div className="mt-1">
-              <div className={`relative ${errors.cuisines ? 'border-red-500 rounded-lg' : ''}`} ref={cuisinesRef}>
+              <div
+                className={`relative ${
+                  errors.cuisines ? "border-red-500 rounded-lg" : ""
+                }`}
+                ref={cuisinesRef}
+              >
                 {/* Selected Items */}
                 <div className="min-h-[42px] p-1 border-gray-300 border rounded-lg bg-white flex flex-wrap gap-1">
-                  {selectedCuisines.map(item => (
+                  {selectedCuisines.map((item) => (
                     <span
                       key={item.id}
                       className="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-sm"
@@ -729,23 +782,31 @@ const RestaurantCreateModal = ({ onClose }) => {
                       </button>
                     </span>
                   ))}
-                  
+
                   <div className="flex-1 relative">
                     <input
                       type="text"
                       className="w-full p-1 outline-none"
-                      placeholder={selectedCuisines.length === 0 ? "Select cuisines..." : ""}
+                      placeholder={
+                        selectedCuisines.length === 0
+                          ? "Select cuisines..."
+                          : ""
+                      }
                       value={cuisineSearchTerm}
                       onChange={(e) => setCuisineSearchTerm(e.target.value)}
                       onFocus={() => setOpenCuisines(true)}
                     />
                   </div>
-                  
+
                   <button
                     onClick={() => setOpenCuisines(!isOpenCuisines)}
                     className="self-center px-1"
                   >
-                    <FaChevronDown className={`transition-transform ${isOpenCuisines ? 'rotate-180' : ''}`} />
+                    <FaChevronDown
+                      className={`transition-transform ${
+                        isOpenCuisines ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                 </div>
 
@@ -753,9 +814,11 @@ const RestaurantCreateModal = ({ onClose }) => {
                 {isOpenCuisines && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
                     {filteredCuisinesOptions.length === 0 ? (
-                      <div className="p-2 text-gray-500 text-center">No cuisines found</div>
+                      <div className="p-2 text-gray-500 text-center">
+                        No cuisines found
+                      </div>
                     ) : (
-                      filteredCuisinesOptions.map(option => (
+                      filteredCuisinesOptions.map((option) => (
                         <button
                           key={option.id}
                           className="w-full px-4 py-2 text-left hover:bg-yellow-50 focus:bg-yellow-50 focus:outline-none"
@@ -769,13 +832,16 @@ const RestaurantCreateModal = ({ onClose }) => {
                 )}
               </div>
               {errors.cuisines && (
-                <p className="mt-1 text-sm text-red-500">Please select at least one cuisine</p>
+                <p className="mt-1 text-sm text-red-500">
+                  Please select at least one cuisine
+                </p>
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Address
+            <label className="block text-sm font-medium text-gray-700">
+              Address
               <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -787,7 +853,8 @@ const RestaurantCreateModal = ({ onClose }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Map URL
+            <label className="block text-sm font-medium text-gray-700">
+              Map URL
               <span className="text-red-500">*</span>
             </label>
             <input
@@ -799,7 +866,8 @@ const RestaurantCreateModal = ({ onClose }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Restaurant Image
+            <label className="block text-sm font-medium text-gray-700">
+              Restaurant Image
               <span className="text-red-500">*</span>
             </label>
             <input
@@ -820,10 +888,21 @@ const RestaurantCreateModal = ({ onClose }) => {
 
           <div>
             <div className="flex justify-between items-center">
-              <label className="block text-sm font-medium text-gray-700">Additional Images</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Additional Images
+              </label>
+              <ToastContainer position="top-right" autoClose={3000} />
               <button
                 type="button"
-                onClick={() => setAdditionalImagesCount(prev => prev + 1)}
+                onClick={() => {
+                  setAdditionalImagesCount((prev) => {
+                    if (prev >= 10) {
+                      toast.error("You can upload a maximum of 10 images.");
+                      return prev; // don’t increase count
+                    }
+                    return prev + 1;
+                  });
+                }}
                 className="text-sm text-[#f99109] hover:text-yellow-600"
               >
                 + Add More Images
@@ -862,17 +941,22 @@ const RestaurantCreateModal = ({ onClose }) => {
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">Social Links</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Social Links
+              </label>
               <button
                 type="button"
-                onClick={() => setSocialLinksCount(prev => prev + 1)}
+                onClick={() => setSocialLinksCount((prev) => prev + 1)}
                 className="text-sm text-[#f99109] hover:text-yellow-600"
               >
                 + Add More
               </button>
             </div>
             {Array.from({ length: socialLinksCount }).map((_, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+              <div
+                key={index}
+                className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2"
+              >
                 <input
                   name={`platform${index}`}
                   type="text"
@@ -888,7 +972,7 @@ const RestaurantCreateModal = ({ onClose }) => {
                 {index !== 0 && (
                   <button
                     type="button"
-                    onClick={() => setSocialLinksCount(prev => prev - 1)}
+                    onClick={() => setSocialLinksCount((prev) => prev - 1)}
                     className="self-center text-red-500 hover:text-red-700"
                   >
                     <FaTimes />

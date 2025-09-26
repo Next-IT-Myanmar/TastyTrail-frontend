@@ -32,7 +32,6 @@ ChartJS.register(
       if (response) {
         setDashboardData(response);
       }
-      console.log("Dashboard Dataaaa:", response);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
