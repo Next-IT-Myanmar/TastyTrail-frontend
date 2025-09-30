@@ -227,97 +227,115 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
 
     try {
       const formData = new FormData();
-      
+
       // Basic information
-      formData.append('id', restaurant?.id);
-      formData.append('name', e.target.elements.name.value);
-      formData.append('description', e.target.elements.description.value);
-      formData.append('address', e.target.elements.address.value);
-      formData.append('map', e.target.elements.map.value);
-      formData.append('rank', rating);
-      formData.append('priceRange', priceRate);
-      formData.append('promoRate', promotion);
-      formData.append('isPromotion', promotion > 0 ? 'true' : 'false');
-      formData.append('openHour', formatTimeTo24Hour(openTime));
-      formData.append('closeHour', formatTimeTo24Hour(closeTime));
+      formData.append("id", restaurant?.id);
+      formData.append("name", e.target.elements.name.value);
+      formData.append("description", e.target.elements.description.value);
+      formData.append("address", e.target.elements.address.value);
+      formData.append("map", e.target.elements.map.value);
+      formData.append("rank", rating);
+      formData.append("priceRange", priceRate);
+      formData.append("promoRate", promotion);
+      formData.append("isPromotion", promotion > 0 ? "true" : "false");
+      formData.append("openHour", formatTimeTo24Hour(openTime));
+      formData.append("closeHour", formatTimeTo24Hour(closeTime));
+
+      // ✅ Append categories as comma-separated string
+      const categoryIds = selectedCategories.map((cat) => cat.id).join(",");
+      formData.append("categoryIds", categoryIds);
+
+      // ✅ Append countries
+      const countryIds = selectedCountries.map((c) => c.id).join(",");
+      formData.append("countryIds", countryIds);
+
+      // ✅ Cuisines
+      const cuisineIds = selectedCuisines.map((c) => c.id).join(",");
+      formData.append("cuisineIds", cuisineIds);
 
       // Handle phone numbers
       const phoneNumbers = Array.from(e.target.elements)
-        .filter(element => element.name.startsWith('phones['))
-        .map(element => element.value)
-        .filter(value => value);
-      formData.append('phones', phoneNumbers.join(','));
+        .filter((element) => element.name.startsWith("phones["))
+        .map((element) => element.value)
+        .filter((value) => value);
+      formData.append("phones", phoneNumbers.join(","));
 
-           // Handle main image
-           const mainImageInput = e.target.elements.img;
-           if (mainImageInput?.files[0]) {
-             formData.append('img', mainImageInput.files[0]);
-           } else if (imagePreview && !imagePreview.startsWith('data:')) {
-             try {
-               const response = await fetch(imagePreview);
-               const blob = await response.blob();
-               formData.append('img', blob);
-             } catch (error) {
-               console.error('Error converting main image to binary:', error);
-             }
-           }
-     
-           // Handle additional images
-           const additionalImageInputs = Array.from(e.target.elements)
-             .filter(element => element.name.startsWith('additionalImages-'))
-             .map(element => element.files[0])
-             .filter(file => file);
-           
-           // Clear existing otherPhoto array
-           formData.delete('otherPhoto');
+      // Handle main image
+      const mainImageInput = e.target.elements.img;
+      if (mainImageInput?.files[0]) {
+        formData.append("img", mainImageInput.files[0]);
+      } else if (imagePreview && !imagePreview.startsWith("data:")) {
+        try {
+          const response = await fetch(imagePreview);
+          const blob = await response.blob();
+          formData.append("img", blob);
+        } catch (error) {
+          console.error("Error converting main image to binary:", error);
+        }
+      }
 
-           // Handle new image files first
-          additionalImageInputs.forEach(file => {
-            if (file) {
-              formData.append('otherPhoto', file);
-            }
-          });
+      // Handle additional images
+      const additionalImageInputs = Array.from(e.target.elements)
+        .filter((element) => element.name.startsWith("additionalImages-"))
+        .map((element) => element.files[0])
+        .filter((file) => file);
 
-          // Handle existing images from additionalImagePreviews
-          for (let i = 0; i < additionalImagePreviews.length; i++) {
-            const preview = additionalImagePreviews[i];
-            if (!preview.startsWith('data:')) {
-              try {
-                const response = await fetch(preview);
-                const blob = await response.blob();
-                formData.append('otherPhoto', blob);
-              } catch (error) {
-                console.error('Error converting image to binary:', error);
-              }
-            } else if (preview.startsWith('data:')) {
-              // Handle newly selected images that are in data URL format
-              try {
-                const response = await fetch(preview);
-                const blob = await response.blob();
-                formData.append('otherPhoto', blob);
-              } catch (error) {
-                console.error('Error converting data URL to blob:', error);
-              }
-            }
+      // Clear existing otherPhoto array
+      formData.delete("otherPhoto");
+
+      // Handle new image files first
+      additionalImageInputs.forEach((file) => {
+        if (file) {
+          formData.append("otherPhoto", file);
+        }
+      });
+
+      // Handle existing images from additionalImagePreviews
+      for (let i = 0; i < additionalImagePreviews.length; i++) {
+        const preview = additionalImagePreviews[i];
+        if (!preview.startsWith("data:")) {
+          try {
+            const response = await fetch(preview);
+            const blob = await response.blob();
+            formData.append("otherPhoto", blob);
+          } catch (error) {
+            console.error("Error converting image to binary:", error);
           }
+        } else if (preview.startsWith("data:")) {
+          // Handle newly selected images that are in data URL format
+          try {
+            const response = await fetch(preview);
+            const blob = await response.blob();
+            formData.append("otherPhoto", blob);
+          } catch (error) {
+            console.error("Error converting data URL to blob:", error);
+          }
+        }
+      }
 
       // Handle social links in the exact format required
       const socialLinks = [];
       Array.from({ length: socialLinksCount }).forEach((_, index) => {
-        const platform = e.target.elements[`socialLinks-${index}-name`]?.value.toLowerCase();
+        const platform =
+          e.target.elements[`socialLinks-${index}-name`]?.value.toLowerCase();
         const url = e.target.elements[`socialUrl${index}`]?.value;
         if (platform && url) {
           socialLinks.push({ platform, url });
         }
       });
-      formData.append('socialLink', JSON.stringify(socialLinks));
+      formData.append("socialLink", JSON.stringify(socialLinks));
 
       // Send the form data to the backend
       const response = await updateRestaurant(restaurant.id, formData);
-      
+
       // Check if response exists and has data
       if (response && response.data) {
-        dispatch(sendMessage({ type: 'success', text: 'Restaurant updated successfully!' }));
+        dispatch(
+          sendMessage({
+            type: "success",
+            text: "Restaurant updated successfully!",
+          })
+        );
         // Fetch updated restaurant list and pass the updated data
         const updatedList = await getRestaurantLists();
         if (updatedList) {
@@ -329,11 +347,15 @@ const RestaurantUpdateModal = ({ restaurant, onClose }) => {
           dispatch(sendMessage(null));
         }, 5000);
       } else {
-        console.error('Update failed:', response?.error || 'Unknown error');
-        dispatch(sendMessage({ 
-          type: 'error', 
-          text: response?.error || 'Failed to update restaurant. Please try again.' 
-        }));
+        console.error("Update failed:", response?.error || "Unknown error");
+        dispatch(
+          sendMessage({
+            type: "error",
+            text:
+              response?.error ||
+              "Failed to update restaurant. Please try again.",
+          })
+        );
       }
     } catch (error) {
       console.error('Error updating restaurant:', error);
